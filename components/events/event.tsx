@@ -1,6 +1,5 @@
 "use client"
 
-import {Card, CardDescription, CardFooter, CardHeader} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Event, EventType} from "@/types/events";
 import {Badge} from "@/components/ui/badge";

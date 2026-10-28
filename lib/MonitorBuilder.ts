@@ -1,6 +1,6 @@
 import {Monitor, MonitorType} from "@/types/status";
-import {StatusMonitor} from "@/components/Status/StatusMonitor";
-import {GroupMonitor} from "@/components/Status/GroupMonitor";
+import {StatusMonitor} from "@/components/status/statusMonitor";
+import {GroupMonitor} from "@/components/status/groupMonitor";
 import {bool} from "sharp";
 
 export class MonitorBuilder {

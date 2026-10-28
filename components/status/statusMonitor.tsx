@@ -18,10 +18,6 @@ export function StatusMonitor(
         <div className={"border-2 p-2 rounded-2xl ml-8"} key={monitor.id}>
             <span className={"inline-flex justify-center items-center"}>
                 <div className={"text-sm flex justify-center items-center"}>
-                    <span>
-                        {monitor.name}
-                    </span>
-                    <span className={"inline-flex"}>
                     <Badge color={monitor.isOnline ? "green" : "red"}>
                         {monitor.isOnline ?
                             <Image
@@ -35,6 +31,10 @@ export function StatusMonitor(
                                 height={20}
                                 alt={"Offline"}/>}
                     </Badge>
+                    <span>
+                        {monitor.name}
+                    </span>
+                    <span className={"inline-flex"}>
                 </span>
                 </div>
                 <span className={"p-2 flex justify-center items-center relative left-30"}>

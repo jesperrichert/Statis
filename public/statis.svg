@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="28 28 200 200" role="img" aria-label="Statis Icon">
+  <circle cx="128" cy="128" r="88" fill="none" stroke="#34D399" stroke-opacity="0.3" stroke-width="10"/>
+  <circle cx="128" cy="128" r="60" fill="none" stroke="#34D399" stroke-opacity="0.65" stroke-width="10"/>
+  <circle cx="128" cy="128" r="30" fill="#34D399"/>
+</svg>

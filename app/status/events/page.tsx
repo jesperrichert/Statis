@@ -3,7 +3,7 @@
 import {useEffect, useState} from "react";
 import {Monitor} from "@/types/status";
 import {Event} from "@/types/events";
-import {IncidenceEvent} from "@/components/Events/Event";
+import {IncidenceEvent} from "@/components/events/event";
 import {motion} from "framer-motion";
 
 export default function StatusEventPage() {
