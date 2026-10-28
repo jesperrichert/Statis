@@ -1,0 +1,12 @@
+services:
+  app:
+    image: ghcr.io/jesperrichert/statis:latest
+    volumes:
+      - "./storage/db.sqlite:/app/db.sqlite"
+    ports:
+      - "4000:3000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env

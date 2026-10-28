@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Custom
+/Statis.Frontend/node_modules
+/Statis.Frontend/build
+/Statis.Frontend/.react-router
+/Statis.Backend/*.db
+/Statis.Backend/*.sqlite

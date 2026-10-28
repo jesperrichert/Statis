@@ -1,1 +1,3 @@
-Run with the env.example and use npm run build and npm run start to run the app.
+# Go-go-vite-rr
+
+a go-vite-rr for a go api Project with gin and gorm
