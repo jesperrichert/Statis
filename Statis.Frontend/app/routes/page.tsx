@@ -26,7 +26,7 @@ export default function Page() {
   return (
       <main className={"w-screen"}>
         <div
-            className="dark:bg-zinc-900/80 rounded-2xl"
+            className="rounded-2xl"
         >
           <motion.h1
               initial={{opacity: 0, y: -20}}

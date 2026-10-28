@@ -27,11 +27,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
+        <link rel="icon" href="/statis.svg" />
+        <title>Statis</title>
+        <meta name="description" content="Statis" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-h-screen flex flex-col bg-zinc-900/80 text-zinc-100 transition-colors duration-300">
         {children}
         <ScrollRestoration />
         <Scripts />
