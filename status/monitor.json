@@ -1,23 +1,23 @@
 [
   {
     "id": "disbot",
-    "isParent": true,
+    "is_parent": true,
     "group": "disbot",
     "name": "DisBot",
     "type": "group"
   },
   {
     "id": "disbotweb",
-    "isParent": false,
+    "is_parent": false,
     "group": "disbot",
     "name": "disbot.app",
     "type": "tcp",
     "external_url": "https://disbot.app",
-    "checkData": "disbot.app"
+    "check_data": "disbot.app"
   },
   {
     "id": "crystopia",
-    "isParent": true,
+    "is_parent": true,
     "group": "crystopia",
     "name": "Crystopia",
     "type": "group"
