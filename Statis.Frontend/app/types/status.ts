@@ -1,14 +1,12 @@
 export type Monitor = {
     id: string
-    isParent: boolean
+    is_parent: boolean
     group: string | null
     name: string
     description: string
     type: MonitorType
     external_url: string | null
-    checkData: any | null
-    isOnline: boolean
-    isEffected: boolean
+    check_data: any | null
 }
 
 export enum MonitorType {

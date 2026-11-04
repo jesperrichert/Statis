@@ -2,11 +2,9 @@ package config
 
 import (
 	"github.com/gin-gonic/gin"
-	"jespersen.zip.statis/internal/repository"
-	"jespersen.zip.statis/internal/services"
+	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/transport/http"
 	"jespersen.zip.statis/internal/transport/http/router"
-	"gorm.io/gorm"
 )
 
 type Appconfig struct {
@@ -15,19 +13,14 @@ type Appconfig struct {
 }
 
 func Build(config *Appconfig) {
-	//Register Repositories
-	exampleRepository := repository.NewExample()
-
-	//Register Services
-	exampleService := services.NewExampleService()
 
 	//Register Controller
-	exampleController := http.NewExampleController(config.DB, exampleService, exampleRepository) 
+	monitorController := http.NewMonitorController(config.DB)
 
 	routeConfig := router.RouterConfig{
-		App: config.App, 
-		ExampleController: exampleController, 
-	} 
+		App:               config.App,
+		MonitorController: monitorController,
+	}
 
 	routeConfig.Setup()
 }

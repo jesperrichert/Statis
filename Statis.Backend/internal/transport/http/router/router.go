@@ -7,8 +7,7 @@ import (
 
 type RouterConfig struct {
 	App               *gin.Engine
-	ExampleController *http.ExampleController 
-	//Register Controller Here
+	MonitorController *http.MonitorController
 }
 
 func (c *RouterConfig) Setup() {
@@ -18,9 +17,13 @@ func (c *RouterConfig) Setup() {
 
 	api := c.App.Group("/api")
 	{
-		api.GET("/:id", c.ExampleController.Get)
-		api.GET("/", c.ExampleController.List)
-		api.POST("/", c.ExampleController.Post)
+		status := api.Group("/status")
+		{
+			monitors := status.Group("/monitors")
+			{
+				monitors.GET("/", c.MonitorController.Get)
+			}
+		}
 	}
 
 }

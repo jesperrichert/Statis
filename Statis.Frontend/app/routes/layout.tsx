@@ -7,7 +7,7 @@ export default function RootLayout() {
   return (
     <>
       <header className="border-b border-zinc-700">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <nav className="flex gap-8 text-sm items-center justify-center font-medium text-zinc-300">
             <div>
               <img src="/statis.svg" alt="Statis" width={50} height={50} />
@@ -32,7 +32,7 @@ export default function RootLayout() {
         </div>
       </header>
 
-      <main className="grow max-w-6xl mx-auto px-6 py-8">
+      <main>
         <Outlet />
       </main>
     </>

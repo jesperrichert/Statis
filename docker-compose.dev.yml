@@ -1,6 +1,10 @@
 services:
   app:
     image: ghcr.io/jesperrichert/statis:latest
+    environment:
+      EVENTS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/events.json"
+      INCIDENCE_DIRECTORY: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidence/{page}.mdx"
+      MONITORS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/monitor.json"
     volumes:
       - "./storage/db.sqlite:/app/db.sqlite"
     ports:
