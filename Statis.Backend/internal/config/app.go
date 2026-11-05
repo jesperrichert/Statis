@@ -16,10 +16,14 @@ func Build(config *Appconfig) {
 
 	//Register Controller
 	monitorController := http.NewMonitorController(config.DB)
+	eventsController := http.NewEventsController(config.DB)
+	incidencesController := http.NewIncidencesController(config.DB)
 
 	routeConfig := router.RouterConfig{
-		App:               config.App,
-		MonitorController: monitorController,
+		App:                  config.App,
+		MonitorController:    monitorController,
+		EventsController:     eventsController,
+		IncidencesController: incidencesController,
 	}
 
 	routeConfig.Setup()

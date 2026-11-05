@@ -1,6 +1,6 @@
 import { GroupMonitor } from "~/components/status/groupMonitor"
 import { StatusMonitor } from "~/components/status/statusMonitor"
-import { MonitorType, type Monitor } from "~/types/status"
+import { MonitorType, type Monitor } from "../../types/status"
 
 
 export class MonitorBuilder {

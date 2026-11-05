@@ -6,8 +6,10 @@ import (
 )
 
 type RouterConfig struct {
-	App               *gin.Engine
-	MonitorController *http.MonitorController
+	App                  *gin.Engine
+	MonitorController    *http.MonitorController
+	EventsController     *http.EventsController
+	IncidencesController *http.IncidencesController
 }
 
 func (c *RouterConfig) Setup() {
@@ -22,6 +24,16 @@ func (c *RouterConfig) Setup() {
 			monitors := status.Group("/monitors")
 			{
 				monitors.GET("/", c.MonitorController.Get)
+			}
+
+			events := status.Group("/events")
+			{
+				events.GET("/", c.EventsController.Get)
+			}
+
+			incidences := status.Group("incidences")
+			{
+				incidences.GET("/:id", c.IncidencesController.Get)
 			}
 		}
 	}

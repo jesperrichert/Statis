@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import type { Monitor } from "~/types/status";
 import { MonitorBuilder } from "~/lib/MonitorBuilder";
+import type { Monitor } from "../../types/status";
 
 export default function Page() {
   const [monitors, setMonitors] = useState<Monitor[]>([]);

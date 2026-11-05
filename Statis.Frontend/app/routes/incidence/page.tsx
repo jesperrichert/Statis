@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import type { PageCallback } from "~/types/pages";
+import { analyseComplexValue, motion } from "framer-motion";
 import Markdown from "markdown-to-jsx";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { CalendarDays, Signature } from "lucide-react";
 
 export default function IncidencePage() {
   const [mdContent, setMdContent] = useState<string>("");
-  const [metadata, setMetadata] = useState<Record<string, any>>({});
+  const [metadata, setMetadata] = useState<Record<string, any>>();
   const [loading, setLoading] = useState<boolean>(true);
   const pathname = window.location.href.split("/").pop();
 
@@ -21,16 +21,20 @@ export default function IncidencePage() {
   }, []);
 
   const fetchIncidence = async () => {
-    const pageData = await fetch(`/api/status/incidence/${pathname}`, {
-      method: "GET",
+    const pageData = await fetch(`/api/status/incidences/${pathname}`);
+    const data = await pageData.text();
+
+    const metaDataString = data.split("---\n")[1].split("\n---")[0];
+    const metaData = metaDataString.replaceAll(" ", "").split("\n");
+    const metaDataRecord: Record<string, any> = {};
+    metaData.filter(Boolean).forEach((c) => {
+      const key = c.split(":")[0];
+      const value = c.split(":")[1].replaceAll('"', "");
+      metaDataRecord[key] = value;
     });
-
-    const data = (await pageData.json()) as PageCallback;
-
-    console.log(data);
-
-    setMetadata(data.metaData);
-    setMdContent(data.markdown);
+    
+    setMetadata(metaDataRecord);
+    setMdContent(data.split("\n---")[1]);
     setLoading(false);
   };
 
@@ -46,7 +50,7 @@ export default function IncidencePage() {
         >
           {/* Headline */}
           {metadata?.title && (
-            <h1 className="text-4xl font-extrabold mb-6 text-center bg-gradient-to-r from-zinc-400 to-zinc-500 bg-clip-text text-transparent drop-shadow">
+            <h1 className="text-4xl font-extrabold mb-6 text-center bg-linear-to-r from-zinc-400 to-zinc-500 bg-clip-text text-transparent drop-shadow">
               {metadata.title}
             </h1>
           )}
@@ -55,12 +59,18 @@ export default function IncidencePage() {
           <div className="flex justify-center gap-6 mb-8 text-sm text-zinc-500 dark:text-zinc-400">
             {metadata?.date && (
               <span>
-                <span className="font-semibold">📅</span> {metadata.date}
+                <span className="font-semibold">
+                  <CalendarDays />
+                </span>{" "}
+                {metadata.date}
               </span>
             )}
             {metadata?.author && (
               <span>
-                <span className="font-semibold">✍️</span> {metadata.author}
+                <span className="font-semibold">
+                  <Signature />
+                </span>{" "}
+                {metadata.author}
               </span>
             )}
           </div>
@@ -76,7 +86,7 @@ export default function IncidencePage() {
                 },
                 h1: {
                   component: ({ children }: { children: any }) => (
-                    <h1 className="text-white text-3xl font-bold mt-10 mb-4 bg-gradient-to-r from-zinc-400 to-zinc-500 bg-clip-text">
+                    <h1 className="text-white text-3xl font-bold mt-10 mb-4 bg-linear-to-r from-zinc-400 to-zinc-500 bg-clip-text">
                       {children}
                     </h1>
                   ),

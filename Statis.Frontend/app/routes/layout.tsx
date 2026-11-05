@@ -21,7 +21,7 @@ export default function RootLayout() {
               <span className={"text-2xl font-extrabold"}>Home</span>
             </a>
             <a
-              href="/status/events"
+              href="/events"
               className="hover:text-zinc-400 transition-colors inline-flex gap-3"
               aria-label="contact"
             >

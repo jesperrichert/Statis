@@ -1,6 +1,4 @@
-"use client";
-
-import type { Monitor } from "../../types/status";
+import type { Monitor } from "../../../types/status";
 import { MonitorBuilder } from "../../lib/MonitorBuilder";
 import {
   Accordion,
@@ -25,7 +23,7 @@ export function GroupMonitor({
         </AccordionTrigger>
         <AccordionContent>
           <div className={"inline-flex"}>
-            <div className="inline-block h-[100px] min-h-[1em] w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
+            <div className="inline-block h-25 min-h-[1em] w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
             {monitors.length > 0 ? (
               monitors.map((monitor) => {
                 return (

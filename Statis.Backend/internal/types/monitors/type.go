@@ -7,7 +7,7 @@ const (
 	Tcp    MonitorType = iota
 	Http   MonitorType = iota
 	Ping   MonitorType = iota
-	Unkwon MonitorType = iota
+	Unkown MonitorType = iota
 )
 
 var monitorName = map[MonitorType]string{
@@ -15,7 +15,7 @@ var monitorName = map[MonitorType]string{
 	Tcp:    "TCP",
 	Http:   "HTTP",
 	Ping:   "PING",
-	Unkwon: "UNKOWN",
+	Unkown: "UNKOWN",
 }
 
 func (mt MonitorType) ToString() string {
@@ -28,5 +28,5 @@ func ToType(name string) MonitorType {
 			return k
 		}
 	}
-	return Unkwon
+	return Unkown
 }

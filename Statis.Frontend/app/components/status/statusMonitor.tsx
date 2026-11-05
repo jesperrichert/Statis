@@ -1,6 +1,4 @@
-"use client";
-
-import type { Monitor } from "~/types/status";
+import type { Monitor } from "../../../types/status";
 import { Badge } from "../ui/badge";
 import { ArrowUpRightIcon } from "lucide-react";
 
@@ -9,8 +7,8 @@ export function StatusMonitor({ monitor }: { monitor: Monitor }) {
     <div className={"border-2 p-2 rounded-2xl ml-8"} key={monitor.id}>
       <span className={"inline-flex justify-center items-center"}>
         <div className={"text-sm flex justify-center items-center"}>
-          <Badge color={monitor.isOnline ? "green" : "red"}>
-            {monitor.isOnline ? (
+          <Badge color={true ? "green" : "red"}>
+            {true ? (
               <img src={"/online.webp"} width={20} height={20} alt={"Online"} />
             ) : (
               <img
