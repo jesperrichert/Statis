@@ -30,16 +30,16 @@ export default function Page() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="text-4xl font-extrabold mb-8 bg-linear-to-r from-zinc-300 to-zinc-500 bg-clip-text text-transparent"
+          className="text-4xl font-extrabold mb-8 text-white"
         >
           Uptime Monitors
         </motion.h1>
 
-        <div className={"flex flex-col w-100"}>
+        <div className={"flex flex-col gap-5"}>
           {monitors.map((monitor) => {
             if (!monitor.is_parent) return <span key={monitor.id}></span>;
             return (
-              <div className={""}>
+              <div>
                 {new MonitorBuilder(
                   monitor,
                   monitors.filter((m) => m.id != monitor.id),

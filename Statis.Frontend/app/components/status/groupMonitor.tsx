@@ -1,43 +1,48 @@
 import type { Monitor } from "../../../types/status";
-import { MonitorBuilder } from "../../lib/MonitorBuilder";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { Badge } from "../ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { MonitorRow, StatusDot } from "./statusMonitor";
 
-export function GroupMonitor({
-  monitor,
-  monitors,
+
+export function MonitorGroup({
+  parent,
+  children,
 }: {
-  monitor: Monitor;
-  monitors: Monitor[];
+  parent: Monitor;
+  children: Monitor[];
 }) {
+  const onlineCount = children.filter((c) => true).length;
+  const allOnline = onlineCount === children.length;
+
   return (
-    <Accordion key={monitor.id} type="single" collapsible defaultValue="item-1">
-      <AccordionItem value="item-1">
-        <AccordionTrigger>
-          <span>{monitor.name}</span>
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className={"inline-flex"}>
-            <div className="inline-block h-25 min-h-[1em] w-0.5 self-stretch bg-neutral-100 dark:bg-white/10"></div>
-            {monitors.length > 0 ? (
-              monitors.map((monitor) => {
-                return (
-                  <div className={"w-96"}>
-                    {new MonitorBuilder(monitor, monitors).toMonitor()}
-                  </div>
-                );
-              })
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
+      <Accordion type="single" collapsible defaultValue={`group-${parent.id}`}>
+        <AccordionItem value={`group-${parent.id}`} className="border-none">
+          <AccordionTrigger className="px-5 py-4 hover:bg-white/3 hover:no-underline">
+            <div className="flex flex-1 items-center gap-3 text-left">
+              <StatusDot online={allOnline} />
+              <span className="text-xl font-semibold text-white">
+                {parent.name}
+              </span>
+              <span className="ml-auto mr-3 text-sm text-white/50">
+                {onlineCount}/{children.length} online
+              </span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            {children.length > 0 ? (
+              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                {children.map((child) => (
+                  <MonitorRow key={child.id} monitor={child} />
+                ))}
+              </div>
             ) : (
-              <div className={"w-96 p-2"}>No Monitor found</div>
+              <p className="rounded-xl border border-dashed border-white/10 p-4 text-center text-sm text-white/40">
+                Keine Monitore gefunden
+              </p>
             )}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 }

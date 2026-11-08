@@ -1,6 +1,6 @@
-import { GroupMonitor } from "~/components/status/groupMonitor"
-import { StatusMonitor } from "~/components/status/statusMonitor"
+import { MonitorRow } from "~/components/status/statusMonitor"
 import { MonitorType, type Monitor } from "../../types/status"
+import { MonitorGroup } from "~/components/status/groupMonitor"
 
 
 export class MonitorBuilder {
@@ -30,26 +30,26 @@ export class MonitorBuilder {
     }
 
     private buildTcpMonitor(data: Monitor) {
-        return StatusMonitor({
+        return MonitorRow({
             monitor: data
         })
     }
 
     private buildHttpMonitor(data: Monitor) {
-        return StatusMonitor({
+        return MonitorRow({
             monitor: data
         })
     }
 
     private buildGroupMonitor(data: Monitor) {
-        return GroupMonitor({
-            monitor: data,
-            monitors: this.otherMonitors.filter((m) => m.group == data.id)
+        return MonitorGroup({
+            parent: data,
+            children: this.otherMonitors.filter((m) => m.group == data.id)
         })
     }
 
     private buildPingMonitor(data: Monitor) {
-        return StatusMonitor({
+        return MonitorRow({
             monitor: data
         })
     }

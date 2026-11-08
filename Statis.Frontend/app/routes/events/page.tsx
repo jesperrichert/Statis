@@ -42,7 +42,7 @@ export default function StatusEventPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
-        className="text-4xl font-extrabold text-center mb-8 bg-linear-to-r from-zinc-300 to-zinc-500 bg-clip-text text-transparent"
+        className="text-4xl font-extrabold text-center text-white p-3"
       >
         Incident Events
       </motion.h1>
