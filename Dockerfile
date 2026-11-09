@@ -1,13 +1,15 @@
 FROM golang:1.27.3 AS base
 WORKDIR /app
 
-FROM node:latest AS frontend
+FROM oven/bun:slim AS frontend
 WORKDIR /Statis.Frontend
+
+COPY /Statis.Frontend/package.json /Statis.Frontend/package.json
+RUN bun install
 
 COPY /Statis.Frontend /Statis.Frontend
 
-RUN npm install
-RUN npm run build
+RUN bun run build
 
 FROM base AS backend
 WORKDIR /Statis.Backend

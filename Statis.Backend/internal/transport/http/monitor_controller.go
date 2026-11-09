@@ -39,5 +39,14 @@ func (e *MonitorController) Get(ctx *gin.Context) {
 	var body []dto.MonitorDto
 	json.NewDecoder(res.Body).Decode(&body)
 
+	// var l []dto.MonitorDto
+	// for i := range body {
+	// 	m := body[i]
+
+	// 	m.EffectedBy = []string{"dfgdfgdfgdfg", "sdfsdf"}
+	// 	m.State = monitors.Degraded.ToString()
+	// 	l = append(l, m)
+	// }
+
 	ctx.JSON(http.StatusOK, body)
 }

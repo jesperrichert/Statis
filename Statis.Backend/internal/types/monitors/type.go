@@ -10,7 +10,7 @@ const (
 	Unkown MonitorType = iota
 )
 
-var monitorName = map[MonitorType]string{
+var monitorTypeName = map[MonitorType]string{
 	Group:  "GROUP",
 	Tcp:    "TCP",
 	Http:   "HTTP",
@@ -19,11 +19,11 @@ var monitorName = map[MonitorType]string{
 }
 
 func (mt MonitorType) ToString() string {
-	return monitorName[mt]
+	return monitorTypeName[mt]
 }
 
 func ToType(name string) MonitorType {
-	for k, v := range monitorName {
+	for k, v := range monitorTypeName {
 		if v == name {
 			return k
 		}

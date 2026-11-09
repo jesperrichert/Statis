@@ -1,7 +1,15 @@
-import type { Monitor } from "../../../types/status";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import {
+  MonitorState,
+  MonitorStateStyles,
+  type Monitor,
+} from "../../../types/status";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 import { MonitorRow, StatusDot } from "./statusMonitor";
-
 
 export function MonitorGroup({
   parent,
@@ -10,8 +18,17 @@ export function MonitorGroup({
   parent: Monitor;
   children: Monitor[];
 }) {
-  const onlineCount = children.filter((c) => true).length;
-  const allOnline = onlineCount === children.length;
+  const onlineCount = children.filter(
+    (c) => c.state == MonitorState.ONLINE,
+  ).length;
+  const groupStateColor =
+    onlineCount < children.length
+      ? MonitorStateStyles[MonitorState.DEGRADED].color
+      : onlineCount == children.length
+        ? MonitorStateStyles[MonitorState.ONLINE].color
+        : children.length == 0 
+          ? MonitorStateStyles[MonitorState.OFFLINE].color
+          : MonitorStateStyles[MonitorState.DEGRADED].color;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
@@ -19,7 +36,7 @@ export function MonitorGroup({
         <AccordionItem value={`group-${parent.id}`} className="border-none">
           <AccordionTrigger className="px-5 py-4 hover:bg-white/3 hover:no-underline">
             <div className="flex flex-1 items-center gap-3 text-left">
-              <StatusDot online={allOnline} />
+              <StatusDot color={groupStateColor} />
               <span className="text-xl font-semibold text-white">
                 {parent.name}
               </span>
@@ -37,7 +54,7 @@ export function MonitorGroup({
               </div>
             ) : (
               <p className="rounded-xl border border-dashed border-white/10 p-4 text-center text-sm text-white/40">
-                Keine Monitore gefunden
+                No Monitore found
               </p>
             )}
           </AccordionContent>

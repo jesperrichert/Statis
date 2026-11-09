@@ -1,84 +1,99 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { IncidenceEvent } from "~/components/events/event";
 import type { Event } from "../../../types/events";
 
+type DayGroup = { key: string; date: Date; events: Event[] };
+
 export default function StatusEventPage() {
-  const [events, setEvents] = useState<Record<string, Event[]>>({});
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      await fetchEvents();
-    }
-
-    fetchData();
+    fetch("/api/status/events")
+      .then((res) => res.json() as Promise<Event[]>)
+      .then(setEvents)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  const fetchEvents = async () => {
-    const response = await fetch("/api/status/events");
-    const data = (await response.json()) as Event[];
-    const timedEvents: Record<string, Event[]> = {};
-    data.forEach((e) => {
+  const groups = useMemo<DayGroup[]>(() => {
+    const map = new Map<string, DayGroup>();
+
+    for (const e of events) {
       const date = new Date(e.date);
-      const key = `${date.getFullYear()}-${date.getUTCMonth()}-${date.getUTCDay()}`;
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      const group = map.get(key) ?? { key, date, events: [] };
+      group.events.push(e);
+      map.set(key, group);
+    }
 
-      console.log(key);
-
-      const old = timedEvents[key]?.length >= 1 ? timedEvents[key] : [];
-      timedEvents[key] = [...old, e];
-    });
-
-    setEvents(timedEvents);
-  };
+    return [...map.values()]
+      .sort((a, b) => b.date.getTime() - a.date.getTime())
+      .map((g) => ({
+        ...g,
+        events: g.events.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        ),
+      }));
+  }, [events]);
 
   return (
-    <div
-      key={"status"}
-      className="w-screen flex flex-col justify-center items-center"
-    >
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="text-4xl font-extrabold text-center text-white p-3"
-      >
-        Incident Events
-      </motion.h1>
+    <main className="px-4 py-10 sm:px-8">
+      <div className="mx-auto max-w-2xl">
+        <motion.header
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-10 text-center"
+        >
+          <h1 className="text-4xl font-extrabold tracking-tight text-white">
+            Incident Events
+          </h1>
+          <p className="mt-1 text-sm text-white/50">
+           History of All Outages and Updates
+          </p>
+        </motion.header>
 
-      <div className={"flex justify-center items-center"}>
-        {Object.keys(events).length > 0 ? (
-          Object.values(events).map((e) => {
-            const date = new Date(e[0].date);
-            return (
-              <>
-                <div className="flex flex-col justify-center items-center">
-                  <span className="flex font-bold p-2">
-                    {date.getDay()}.{date.getMonth()}.{date.getFullYear()}
-                  </span>
-                  <div>
-                    {e.map((event) => {
-                      return (
-                        <div className="p-2">
-                          <IncidenceEvent event={event} />
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <span className="p-4 mx-4">
-                    <hr className="w-60 border-t-4" />
-                  </span>
-                </div>
-              </>
-            );
-          })
-        ) : (
-          <span className={"flex justify-center items-center"}>
-            No Events found
-          </span>
+        {loading && (
+          <p className="text-center text-white/40">Loading Events…</p>
         )}
+
+        {!loading && groups.length === 0 && (
+          <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-white/40">
+            No events found
+          </p>
+        )}
+
+        <div className="flex flex-col gap-10">
+          {groups.map((group, i) => (
+            <motion.section
+              key={group.key}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.07, duration: 0.4 }}
+            >
+              <h2 className="mb-3 flex items-center gap-3 text-sm font-semibold uppercase tracking-wider text-white/50">
+                {group.date.toLocaleDateString("en-GB", {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })}
+                <span className="h-px flex-1 bg-white/10" />
+              </h2>
+
+              <div className="flex flex-col gap-3">
+                {group.events.map((event) => (
+                  <IncidenceEvent key={event.id} event={event} />
+                ))}
+              </div>
+            </motion.section>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

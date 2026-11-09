@@ -35,7 +35,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen flex flex-col bg-zinc-900/80 text-zinc-100 transition-colors duration-300">
+      <body className="min-h-screen flex flex-col bg-linear-to-b from-zinc-950 to-zinc-900 text-zinc-100 transition-colors duration-300">
         {children}
         <ScrollRestoration />
         <Scripts />

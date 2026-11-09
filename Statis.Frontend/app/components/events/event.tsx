@@ -1,6 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react";
-import { useState } from "react";
-import { EventType, type Event } from "../../../types/events";
+import { EventType, EventTypeStyles, type Event } from "../../../types/events";
 import {
   Accordion,
   AccordionContent,
@@ -11,67 +10,59 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
 export function IncidenceEvent({ event }: { event: Event }) {
-  const [isOpen, setOpen] = useState(false);
-
-  const typeColor = (type: EventType) => {
-    switch (type) {
-      case EventType.INVESTIGATING: {
-        return "#FF0000";
-      }
-      case EventType.UPDATE: {
-        return "#808080";
-      }
-      case EventType.IDENTIFIED: {
-        return "#FFA500";
-      }
-      case EventType.RESOLVED: {
-        return "#00FF00";
-      }
-    }
-  };
+  const style = EventTypeStyles[event.type];
+  const time = new Date(event.date).toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
-    <Accordion
-      type="single"
-      collapsible
-      className="w-150 flex justify-center rounded-lg border"
-    >
-      <AccordionItem
-        key={event.id}
-        value="item-1"
-        className="border-b px-3 last:border-b-0"
-      >
-        <AccordionTrigger
-          className={`hover:no-underline cursor-pointer`}
-          onClick={() => setOpen(!isOpen)}
-        >
-          <span>{event.title}</span>
-          {/* bg-[#00FF00}] bg-[#FF0000] bg-[#808080] bg-[#FFA500]  */}
-          <span className={"right-1/12 absolute"}>
-            <Badge className={`bg-[${typeColor(event.type)}]`}>
-              {event.type.charAt(0).toUpperCase() +
-                event.type.slice(1, event.type.length)}
-            </Badge>
-          </span>
-        </AccordionTrigger>
-        <AccordionContent>
-          <span className={"mb-10 p-2"}>{event.description}</span>
-          <hr className={"p-1 mt-2 mx-2 h-3"} />
-          <div className={"mt-2 mb-5 flex"}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full text-zinc-700 font-extrabold hover:font-medium hover:cursor-pointer"
-              onClick={() => window.open(`/incidences/${event.id}`)}
-            >
-              <span>Open Incidence</span>
-              <span>
-                <ExternalLinkIcon></ExternalLinkIcon>
-              </span>
-            </Button>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
+      <Accordion type="single" collapsible>
+        <AccordionItem value={`event-${event.id}`} className="border-none">
+          <AccordionTrigger className="cursor-pointer px-5 py-4 hover:bg-white/3 hover:no-underline">
+            <div className="flex flex-1 items-center gap-3 text-left">
+              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`} />
+              <div className="flex min-w-0 flex-col">
+                <span className="truncate font-semibold text-white">
+                  {event.title}
+                </span>
+                <span className="text-xs text-white/40">{time} Uhr</span>
+              </div>
+              <Badge
+                variant="outline"
+                className={`ml-auto mr-3 shrink-0 ${style.badge}`}
+              >
+                {style.label}
+              </Badge>
+            </div>
+          </AccordionTrigger>
+
+          <AccordionContent className="px-5 pb-5">
+            <p className="whitespace-pre-line text-sm leading-relaxed text-white/70">
+              {event.description}
+            </p>
+
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="w-full gap-2 border-white/10 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              >
+                <a
+                  href={`/incidences/${event.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open Incidence
+                  <ExternalLinkIcon className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 }
