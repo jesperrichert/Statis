@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"jespersen.zip.statis/internal/transport/http"
+	"jespersen.zip.statis/internal/transport/http/middleware"
 )
 
 type RouterConfig struct {
@@ -24,16 +25,50 @@ func (c *RouterConfig) Setup() {
 			monitors := status.Group("/monitors")
 			{
 				monitors.GET("/", c.MonitorController.Get)
+				monitors.POST("/", middleware.DefaultMiddleware, c.MonitorController.Post)
 			}
 
 			events := status.Group("/events")
 			{
 				events.GET("/", c.EventsController.Get)
+				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Get)
 			}
 
-			incidences := status.Group("incidences")
+			incidences := status.Group("/incidences")
 			{
 				incidences.GET("/:id", c.IncidencesController.Get)
+				incidences.POST("/", middleware.DefaultMiddleware, c.IncidencesController.Post)
+			}
+		}
+	}
+
+}
+
+func (c *RouterConfig) Post() {
+	if c.App == nil {
+		c.App = gin.Default()
+	}
+
+	api := c.App.Group("/api")
+	{
+		status := api.Group("/status")
+		{
+			monitors := status.Group("/monitors")
+			{
+				monitors.GET("/", c.MonitorController.Get)
+				monitors.POST("/", middleware.DefaultMiddleware, c.MonitorController.Post)
+			}
+
+			events := status.Group("/events")
+			{
+				events.GET("/", c.EventsController.Get)
+				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Get)
+			}
+
+			incidences := status.Group("/incidences")
+			{
+				incidences.GET("/:id", c.IncidencesController.Get)
+				incidences.POST("/", middleware.DefaultMiddleware, c.IncidencesController.Post)
 			}
 		}
 	}

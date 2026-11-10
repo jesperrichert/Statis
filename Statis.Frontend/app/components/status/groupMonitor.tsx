@@ -32,8 +32,8 @@ export function MonitorGroup({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
-      <Accordion type="single" collapsible defaultValue={`group-${parent.id}`}>
-        <AccordionItem value={`group-${parent.id}`} className="border-none">
+      <Accordion type="single" collapsible defaultValue={`group-${parent.identifier}`}>
+        <AccordionItem value={`group-${parent.identifier}`} className="border-none">
           <AccordionTrigger className="px-5 py-4 hover:bg-white/3 hover:no-underline">
             <div className="flex flex-1 items-center gap-3 text-left">
               <StatusDot color={groupStateColor} />
@@ -49,7 +49,7 @@ export function MonitorGroup({
             {children.length > 0 ? (
               <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 {children.map((child) => (
-                  <MonitorRow key={child.id} monitor={child} />
+                  <MonitorRow key={child.identifier} monitor={child} />
                 ))}
               </div>
             ) : (

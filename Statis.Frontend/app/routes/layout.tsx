@@ -8,7 +8,7 @@ export default function RootLayout() {
     <>
       <header className="border-b border-zinc-700">
         <div className="flex items-center justify-between">
-          <nav className="flex gap-8 text-sm items-center justify-center font-medium text-zinc-300">
+          <nav className="flex gap-8 text-sm items-center justify-center font-medium text-zinc-300 p-5">
             <div>
               <img src="/statis.svg" alt="Statis" width={50} height={50} />
             </div>

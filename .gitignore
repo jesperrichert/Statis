@@ -47,3 +47,5 @@ next-env.d.ts
 /Statis.Frontend/.react-router
 /Statis.Backend/*.db
 /Statis.Backend/*.sqlite
+/storage
+storage/db.sqlite

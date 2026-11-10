@@ -1,7 +1,5 @@
-import { execSync } from "child_process";
-
 export type Monitor = {
-  id: string;
+  identifier: string;
   is_parent: boolean;
   group: string | null;
   name: string;
@@ -10,8 +8,13 @@ export type Monitor = {
   check_data: any | null;
   external_url: string | null;
   state: MonitorState;
-  effected_by: string[];
+  effected_by: MonitorEffect[];
 };
+
+export type MonitorEffect = {
+  name: string
+  link: string
+}
 
 export enum MonitorState {
   ONLINE = "online",

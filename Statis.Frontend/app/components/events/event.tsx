@@ -19,7 +19,7 @@ export function IncidenceEvent({ event }: { event: Event }) {
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
       <Accordion type="single" collapsible>
-        <AccordionItem value={`event-${event.id}`} className="border-none">
+        <AccordionItem value={`event-${event.identifier}`} className="border-none">
           <AccordionTrigger className="cursor-pointer px-5 py-4 hover:bg-white/3 hover:no-underline">
             <div className="flex flex-1 items-center gap-3 text-left">
               <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${style.dot}`} />
@@ -51,7 +51,7 @@ export function IncidenceEvent({ event }: { event: Event }) {
                 className="w-full gap-2 border-white/10 bg-transparent text-white hover:bg-white/10 hover:text-white"
               >
                 <a
-                  href={`/incidences/${event.id}`}
+                  href={`/incidences/${event.identifier}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

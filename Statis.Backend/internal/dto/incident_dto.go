@@ -1,9 +1,7 @@
 package dto
 
-type EventDto struct {
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Type        string `json:"type"` // EventType
-	Date        string `json:"date"`
+type IncidentDto struct {
+	Identifier string `json:"identifier"`
+	EventId    string `json:"event_id"`
+	Content    string `json:"content"`
 }

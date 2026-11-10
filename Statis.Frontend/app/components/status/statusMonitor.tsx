@@ -63,7 +63,7 @@ export function MonitorRow({ monitor }: { monitor: Monitor }) {
               <>
                 <i>
                   {" "}
-                  <a href={`/incidences/${e}`}>{e}</a>{" "}
+                  <a href={e.link}>{e.name}</a>{" "}
                   {monitor.effected_by.length - 1 == i ? "" : ", "}
                 </i>
               </>

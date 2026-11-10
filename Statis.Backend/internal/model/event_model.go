@@ -1,14 +1,12 @@
 package model
 
-type Monitor struct {
+type Event struct {
 	ID          int `gorm:"primaryKey"`
-	IsParent    bool
-	Group       string
-	Name        string
+	Identifier  string
+	Title       string
 	Description string
-	Type        string // MonitorType
-	ExternalUrl string
-	CheckData   any
-	State       string   // MonitorState
-	EffectedBy  []string `gorm:"serializer:json"`
+	Type        string // EventType
+	Date        string
+	IncidentID  int
+	Incident    Incident
 }

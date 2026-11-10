@@ -44,7 +44,7 @@ export class MonitorBuilder {
     private buildGroupMonitor(data: Monitor) {
         return MonitorGroup({
             parent: data,
-            children: this.otherMonitors.filter((m) => m.group == data.id)
+            children: this.otherMonitors.filter((m) => m.group == data.identifier)
         })
     }
 

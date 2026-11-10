@@ -1,42 +1,58 @@
 package http
 
 import (
-	"io"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"jespersen.zip.statis/internal/dto"
+	"jespersen.zip.statis/internal/model"
 )
 
 type IncidencesController struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewIncidencesController(db *gorm.DB) *IncidencesController {
 	return &IncidencesController{
-		db: db,
+		DB: db,
 	}
 }
 
 // GET
-func (e *IncidencesController) Get(ctx *gin.Context) {
+func (c *IncidencesController) Get(ctx *gin.Context) {
 
-	data, ok := os.LookupEnv("INCIDENCE_DIRECTORY")
-	data = strings.ReplaceAll(data, "{page}", ctx.Param("id"))
-	if !ok {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
+	id := ctx.Param("id")
 
-	res, err := http.Get(data)
+	var incident model.Incident
+	c.DB.Where("identifier = ?", id).First(&incident)
+
+	ctx.Data(http.StatusOK, "text/plain", []byte(incident.Content))
+}
+
+// POST
+func (c *IncidencesController) Post(ctx *gin.Context) {
+
+	var body dto.IncidentDto
+	err := ctx.BindJSON(&body)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	defer res.Body.Close()
-	bytes, err := io.ReadAll(res.Body)
 
-	ctx.Data(http.StatusOK, "text/plain", bytes)
+	var event model.Event
+	c.DB.Where("identifier = ?", body.EventId).First(&event)
+
+	if len(event.Identifier) <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no event found"})
+		return
+	}
+
+	c.DB.Create(&model.Incident{
+		Identifier: body.Identifier,
+		Content:    body.Content,
+		EventID:    event.ID,
+	})
+
+	ctx.JSON(http.StatusCreated, gin.H{})
 }

@@ -1,43 +1,46 @@
 package http
 
 import (
-	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
+	"jespersen.zip.statis/internal/model"
 )
 
 type EventsController struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewEventsController(db *gorm.DB) *EventsController {
 	return &EventsController{
-		db: db,
+		DB: db,
 	}
 }
 
 // GET
-func (e *EventsController) Get(ctx *gin.Context) {
+func (c *EventsController) Get(ctx *gin.Context) {
 
-	data, ok := os.LookupEnv("EVENTS")
-	if !ok {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
+	var events []model.Event
+	c.DB.Find(&events)
+
+	eventDtos := make([]dto.EventDto, 0)
+	for i := range events {
+		event := events[i]
+		eventDtos = append(eventDtos, dto.EventDto{
+			Identifier:  event.Identifier,
+			Title:       event.Title,
+			Description: event.Description,
+			Type:        event.Type,
+			Date:        event.Date,
+		})
 	}
 
-	res, err := http.Get(data)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
-		return
-	}
-	defer res.Body.Close()
+	ctx.JSON(http.StatusOK, eventDtos)
+}
 
-	var body []dto.EventDto
-	json.NewDecoder(res.Body).Decode(&body)
+// Post
+func (c *EventsController) Post(ctx *gin.Context) {
 
-	ctx.JSON(http.StatusOK, body)
 }

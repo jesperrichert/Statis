@@ -22,6 +22,7 @@ export default function StatusEventPage() {
   const groups = useMemo<DayGroup[]>(() => {
     const map = new Map<string, DayGroup>();
 
+    if (!events || events.length <= 0) return [];
     for (const e of events) {
       const date = new Date(e.date);
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -58,10 +59,10 @@ export default function StatusEventPage() {
         </motion.header>
 
         {loading && (
-          <p className="text-center text-white/40">Loading Events…</p>
+          <p className="text-center text-white/40">Loading Events...</p>
         )}
 
-        {!loading && groups.length === 0 && (
+        {!loading && groups.length == 0 && (
           <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-white/40">
             No events found
           </p>
@@ -87,7 +88,7 @@ export default function StatusEventPage() {
 
               <div className="flex flex-col gap-3">
                 {group.events.map((event) => (
-                  <IncidenceEvent key={event.id} event={event} />
+                  <IncidenceEvent key={event.identifier} event={event} />
                 ))}
               </div>
             </motion.section>
