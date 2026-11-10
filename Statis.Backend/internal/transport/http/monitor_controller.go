@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
+	"jespersen.zip.statis/internal/types/monitors"
 )
 
 type MonitorController struct {
@@ -39,14 +40,15 @@ func (e *MonitorController) Get(ctx *gin.Context) {
 	var body []dto.MonitorDto
 	json.NewDecoder(res.Body).Decode(&body)
 
-	// var l []dto.MonitorDto
-	// for i := range body {
-	// 	m := body[i]
+	var l []dto.MonitorDto
+	for i := range body {
+		m := body[i]
 
-	// 	m.EffectedBy = []string{"dfgdfgdfgdfg", "sdfsdf"}
-	// 	m.State = monitors.Degraded.ToString()
-	// 	l = append(l, m)
-	// }
+		m.EffectedBy = []string{"dfgdfgdfgdfg", "sdfsdf"}
+		m.State = monitors.Degraded.ToString()
+		l = append(l, m)
+	}
 
-	ctx.JSON(http.StatusOK, body)
+	ctx.JSON(http.StatusOK, l)
+	// ctx.JSON(http.StatusOK, body)
 }
