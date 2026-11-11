@@ -14,7 +14,7 @@ func NewDatabase() *gorm.DB {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 
-	if err := db.AutoMigrate(&model.Monitor{}, &model.Event{}); err != nil {
+	if err := db.AutoMigrate(&model.Monitor{}, &model.Event{}, &model.Incident{}, &model.Webhook{}); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 

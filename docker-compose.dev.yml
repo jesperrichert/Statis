@@ -1,5 +1,6 @@
 services:
-  app:
+  statis:
+    container_name: statis
     image: ghcr.io/jesperrichert/statis:latest
     environment:
       EVENTS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/events.json"
