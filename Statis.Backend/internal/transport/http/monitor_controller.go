@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/types/monitors"
+	"jespersen.zip.statis/internal/util"
 )
 
 type MonitorController struct {
@@ -24,7 +26,7 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 	var m []model.Monitor
 	c.DB.Find(&m)
 
-	dtos := make([]dto.MonitorDto, 0)
+	dtos := make([]dto.MonitorDto[any], 0)
 	for i := range m {
 		monitor := m[i]
 
@@ -35,7 +37,7 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 			})
 		}
 
-		dtos = append(dtos, dto.MonitorDto{
+		dtos = append(dtos, dto.MonitorDto[any]{
 			Identifier:  monitor.Identifier,
 			IsParent:    monitor.IsParent,
 			Group:       monitor.Group,
@@ -55,35 +57,50 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 // Post
 func (c *MonitorController) Post(ctx *gin.Context) {
 
-	var m dto.MonitorDto
-	err := ctx.BindJSON(&m)
+	var body dto.MonitorDto[any]
+	err := ctx.BindJSON(&body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if util.CheckNull(body.Identifier) ||
+		util.CheckNull(body.State) ||
+		util.CheckNull(body.IsParent) ||
+		util.CheckNull(body.Name) ||
+		util.CheckNull(body.ScheduleTime) ||
+		util.CheckNull(body.Type) ||
+		util.CheckNull(body.TypeData) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
+		return
+	}
+	if !monitors.ToType(body.Type).IsTypeDtoValid(body) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid monitor type"})
+		return
+	}
 
 	var monitor model.Monitor
-	c.DB.Where(&model.Monitor{}).Where("identifier = ?", m.Identifier).First(&monitor)
-	if len(monitor.Identifier) <= 0 {
+	c.DB.Where(&model.Monitor{}).Where("identifier = ?", body.Identifier).First(&monitor)
+	if len(monitor.Identifier) > 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Monitor already exists!"})
+		return
 	}
-	var effects map[string]string = map[string]string{}
-	for i := range m.EffectedBy {
-		effects[m.EffectedBy[i].Name] = m.EffectedBy[i].Link
+	var effects = map[string]string{}
+	for i := range body.EffectedBy {
+		effects[body.EffectedBy[i].Name] = body.EffectedBy[i].Link
 	}
 
 	c.DB.Create(&model.Monitor{
-		Identifier:  m.Identifier,
-		IsParent:    m.IsParent,
-		Group:       m.Group,
-		Name:        m.Name,
-		Description: m.Description,
-		Type:        m.Type,
-		ExternalUrl: m.ExternalUrl,
-		TypeData:    m.TypeData,
-		State:       m.State,
+		Identifier:  body.Identifier,
+		IsParent:    body.IsParent,
+		Group:       body.Group,
+		Name:        body.Name,
+		Description: body.Description,
+		Type:        body.Type,
+		ExternalUrl: body.ExternalUrl,
+		TypeData:    body.TypeData,
+		State:       body.State,
 		EffectedBy:  effects,
 	})
 
-	ctx.JSON(http.StatusOK, gin.H{"monitor": m})
+	ctx.JSON(http.StatusOK, gin.H{"monitor": body})
 }

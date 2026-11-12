@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/util"
 )
 
 type EventsController struct {
@@ -42,5 +43,35 @@ func (c *EventsController) Get(ctx *gin.Context) {
 
 // Post
 func (c *EventsController) Post(ctx *gin.Context) {
+	var body dto.EventDto
+	err := ctx.BindJSON(&body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if util.CheckNull(body.Identifier) ||
+		util.CheckNull(body.Description) ||
+		util.CheckNull(body.Date) ||
+		util.CheckNull(body.Title) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
+		return
+	}
 
+	var event model.Event
+	c.DB.Where("identifier = ?", body.Identifier).First(&event)
+
+	if len(event.Identifier) > 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no event found"})
+		return
+	}
+
+	c.DB.Create(&model.Event{
+		Identifier:  body.Identifier,
+		Title:       body.Title,
+		Description: body.Description,
+		Type:        body.Type,
+		Date:        body.Date,
+	})
+
+	ctx.JSON(http.StatusCreated, gin.H{})
 }

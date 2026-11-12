@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/util"
 )
 
 type IncidencesController struct {
@@ -39,11 +40,17 @@ func (c *IncidencesController) Post(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if util.CheckNull(body.Identifier) ||
+		util.CheckNull(body.EventId) ||
+		util.CheckNull(body.Content) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
+		return
+	}
 
-	var event model.Event
+	var event model.Incident
 	c.DB.Where("identifier = ?", body.EventId).First(&event)
 
-	if len(event.Identifier) <= 0 {
+	if len(event.Identifier) > 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no event found"})
 		return
 	}

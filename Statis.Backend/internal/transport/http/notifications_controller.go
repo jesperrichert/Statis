@@ -8,6 +8,7 @@ import (
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/schedule"
+	"jespersen.zip.statis/internal/util"
 )
 
 type NotificationsController struct {
@@ -26,11 +27,21 @@ func NewNotificationsController(db *gorm.DB, webhookScheduler *schedule.WebhookS
 func (c *NotificationsController) WebhookPost(ctx *gin.Context) {
 
 	var body dto.WebhookDto
-	ctx.BindJSON(&body)
+	err := ctx.BindJSON(&body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "error parsing body"})
+		return
+	}
+	if util.CheckNull(body.Url) ||
+		util.CheckNull(body.Identifier) ||
+		util.CheckNull(body.JSONTemplate) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
+		return
+	}
 
 	var webhook model.Webhook
 	c.DB.Where("identifier = ?", body.Identifier).First(&webhook)
-	if len(webhook.Identifier) <= 0 {
+	if len(webhook.Identifier) > 0 {
 		ctx.JSON(http.StatusConflict, gin.H{"error": "this webhook already exists."})
 		return
 	}

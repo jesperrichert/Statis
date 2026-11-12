@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/types/monitors"
+	"jespersen.zip.statis/internal/util"
 )
 
 type WebhookScheduler struct {
@@ -71,6 +72,13 @@ func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor) 
 				var webhookEntity model.Webhook
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
 				s.DB.Where("identifier = ?", webhookIdentifier).First(&webhookEntity)
+
+				if util.CheckNull(monitorEntity.Identifier) ||
+					util.CheckNull(monitorEntity.State) ||
+					util.CheckNull(webhookEntity.Identifier) ||
+					util.CheckNull(webhookEntity.Url) {
+					return
+				}
 
 				if s.Jobs[key].State != monitors.ToState(monitorEntity.State) {
 					s.Jobs[key] = WebhookJob{
