@@ -43,7 +43,7 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 			Description: monitor.Description,
 			Type:        monitor.Type,
 			ExternalUrl: monitor.ExternalUrl,
-			CheckData:   monitor.CheckData,
+			TypeData:    monitor.TypeData,
 			State:       monitor.State,
 			EffectedBy:  effects,
 		})
@@ -67,7 +67,7 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 	if len(monitor.Identifier) <= 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Monitor already exists!"})
 	}
-	var effects map[string]string
+	var effects map[string]string = map[string]string{}
 	for i := range m.EffectedBy {
 		effects[m.EffectedBy[i].Name] = m.EffectedBy[i].Link
 	}
@@ -80,7 +80,7 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		Description: m.Description,
 		Type:        m.Type,
 		ExternalUrl: m.ExternalUrl,
-		CheckData:   m.CheckData,
+		TypeData:    m.TypeData,
 		State:       m.State,
 		EffectedBy:  effects,
 	})

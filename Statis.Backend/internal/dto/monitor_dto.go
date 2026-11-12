@@ -8,7 +8,7 @@ type MonitorDto struct {
 	Description  string          `json:"description"`
 	Type         string          `json:"type"` // MonitorType
 	ScheduleTime int             `json:"schedule_time"`
-	CheckData    any             `json:"check_data"`
+	TypeData     any             `json:"type_data"`
 	State        string          `json:"state"` // MonitorState
 	EffectedBy   []MonitorEffect `json:"effected_by"`
 	ExternalUrl  string          `json:"external_url"`

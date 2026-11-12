@@ -6,7 +6,7 @@ export type Monitor = {
     description: string;
     type: MonitorType;
     schedule_time: number;
-    check_data: any | null;
+    type_data: any | null;
     state: MonitorState;
     effected_by: MonitorEffect[];
     external_url: string | null;

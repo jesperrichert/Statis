@@ -7,10 +7,11 @@ import (
 )
 
 type RouterConfig struct {
-	App                  *gin.Engine
-	MonitorController    *http.MonitorController
-	EventsController     *http.EventsController
-	IncidencesController *http.IncidencesController
+	App                     *gin.Engine
+	MonitorController       *http.MonitorController
+	EventsController        *http.EventsController
+	IncidencesController    *http.IncidencesController
+	NotificationsController *http.NotificationsController
 }
 
 func (c *RouterConfig) Setup() {
@@ -20,6 +21,11 @@ func (c *RouterConfig) Setup() {
 
 	api := c.App.Group("/api")
 	{
+		notifications := api.Group("/notifications")
+		{
+			notifications.POST("/webhooks", middleware.DefaultMiddleware, c.NotificationsController.WebhookPost)
+		}
+
 		status := api.Group("/status")
 		{
 			monitors := status.Group("/monitors")

@@ -1,4 +1,4 @@
-package cron
+package schedule
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"jespersen.zip.statis/internal/types/monitors"
 )
 
-type WebhookCronConfig struct {
+type WebhookScheduler struct {
 	Scheduler gocron.Scheduler
 	DB        *gorm.DB
 	Jobs      map[string]WebhookJob
@@ -23,32 +23,43 @@ type WebhookJob struct {
 	State monitors.MonitorState
 }
 
-func NewWebhookScheduler(db *gorm.DB) *WebhookCronConfig {
+func NewWebhookScheduler(db *gorm.DB) *WebhookScheduler {
 	s, _ := gocron.NewScheduler()
-	return &WebhookCronConfig{
+	return &WebhookScheduler{
 		Scheduler: s,
 		DB:        db,
 		Jobs:      map[string]WebhookJob{},
 	}
 }
 
-func (s *WebhookCronConfig) Schedule() {
+func (s *WebhookScheduler) Setup() {
 	var webhooks []model.Webhook
 	s.DB.Find(&webhooks)
 	for i := range webhooks {
-		webhook := webhooks[i]
+		s.ScheduleWebhook(webhooks[i])
+	}
 
-		var m []model.Monitor
-		s.DB.Find(&m)
+	println("[WEBHOOK CRON] Started!")
+	s.Scheduler.Start()
+}
 
-		for i := range m {
-			monitor := m[i]
-			s.AddJob(webhook, monitor)
-		}
+func (s *WebhookScheduler) ScheduleWebhook(webhook model.Webhook) {
+	var m []model.Monitor
+	s.DB.Find(&m)
+	for i := range m {
+		s.newJob(webhook, m[i])
 	}
 }
 
-func (s *WebhookCronConfig) AddJob(webhook model.Webhook, monitor model.Monitor) {
+func (s *WebhookScheduler) ScheduleMonitor(monitor model.Monitor) {
+	var webhooks []model.Webhook
+	s.DB.Find(&webhooks)
+	for i := range webhooks {
+		s.newJob(webhooks[i], monitor)
+	}
+}
+
+func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor) {
 	key := string(rune(webhook.ID)) + webhook.Identifier + monitor.Identifier
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
@@ -81,9 +92,4 @@ func (s *WebhookCronConfig) AddJob(webhook model.Webhook, monitor model.Monitor)
 		Job:   j,
 		State: monitors.ToState(monitor.State),
 	}
-}
-
-func (s *WebhookCronConfig) Start() {
-	println("[WEBHOOK CRON] Started!")
-	s.Scheduler.Start()
 }
