@@ -51,7 +51,7 @@ func (s *MonitorScheduler) newJob(monitor model.Monitor[any]) {
 			func(monitorIdentifier string) {
 				var monitorEntity model.Monitor[any]
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
-				s.MonitorManager.Check(&monitorEntity)
+				s.MonitorManager.Check(monitorEntity)
 			},
 			monitor.Identifier,
 		),

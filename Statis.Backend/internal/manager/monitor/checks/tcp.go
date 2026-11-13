@@ -3,10 +3,11 @@ package checks
 import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/types/monitors"
 )
 
 type TCPCheck struct {
-	ICheck
+	ICheck[monitors.TcpMonitor]
 	DB *gorm.DB
 }
 
@@ -16,6 +17,6 @@ func NewTCPCheck(db *gorm.DB) *TCPCheck {
 	}
 }
 
-func (s *TCPCheck) Check(monitor *model.Monitor[any]) {
+func (s *TCPCheck) Check(monitor model.Monitor[monitors.TcpMonitor]) {
 
 }

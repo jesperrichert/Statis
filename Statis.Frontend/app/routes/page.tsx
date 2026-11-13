@@ -29,24 +29,23 @@ export default function Page() {
                     Uptime Monitors
                 </motion.h1>
 
+                {loading && (
+                    <p className="text-center text-white/40">Loading Monitors...</p>
+                )}
+
+                {!loading && (monitors.length == 0) && (
+                    <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-white/40">
+                        No monitors found
+                    </p>
+                )}
+
                 <div className={"flex flex-col gap-5"}>
-                    {loading && (
-                        <p className="text-center text-white/40">Loading Monitors...</p>
-                    )}
-
-                    {!loading && (monitors && monitors.length == 0) && (
-                        <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-white/40">
-                            No monitors found
-                        </p>
-                    )}
-
-                    {monitors && monitors.length > 0 && monitors.map((monitor) => {
-                        if (!monitor.is_parent) return <span key={monitor.identifier}></span>;
+                    {monitors.length > 0 && monitors.map((monitor) => {
                         return (
                             <div>
                                 {new MonitorBuilder(
                                     monitor,
-                                    monitors.filter((m) => m.identifier != monitor.identifier),
+                                    monitors.filter((m) => m.identifier != monitor.identifier) ?? [],
                                 ).toMonitor()}
                             </div>
                         );

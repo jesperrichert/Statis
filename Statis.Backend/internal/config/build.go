@@ -18,11 +18,11 @@ type StatisConfig struct {
 
 func Build(config *StatisConfig) {
 
-	monitorManager := manager.NewMonitorManager(map[monitors.MonitorType]checks.ICheck{
-		monitors.Group: checks.NewDummyCheck(),
-		monitors.Http:  checks.NewHttpCheck(config.DB),
-		monitors.Ping:  checks.NewPingCheck(config.DB),
-		monitors.Tcp:   checks.NewTCPCheck(config.DB),
+	monitorManager := manager.NewMonitorManager(map[monitors.MonitorType]checks.ICheckBase{
+		monitors.Group: checks.NewCheckAdapter(checks.NewDummyCheck()),
+		monitors.Http:  checks.NewCheckAdapter(checks.NewHttpCheck(config.DB)),
+		monitors.Ping:  checks.NewCheckAdapter(checks.NewPingCheck(config.DB)),
+		monitors.Tcp:   checks.NewCheckAdapter(checks.NewTCPCheck(config.DB)),
 	})
 
 	// Scheduler

@@ -7,15 +7,15 @@ import (
 )
 
 type MonitorManager struct {
-	Checker map[monitors.MonitorType]checks.ICheck
+	Checker map[monitors.MonitorType]checks.ICheckBase
 }
 
-func NewMonitorManager(checker map[monitors.MonitorType]checks.ICheck) *MonitorManager {
+func NewMonitorManager(checker map[monitors.MonitorType]checks.ICheckBase) *MonitorManager {
 	return &MonitorManager{
 		Checker: checker,
 	}
 }
 
-func (m *MonitorManager) Check(monitor *model.Monitor[any]) {
-	m.Checker[monitors.ToType(monitor.Type)].Check(monitor)
+func (m *MonitorManager) Check(monitor model.Monitor[any]) {
+	m.Checker[monitors.ToType(monitor.Type)].CheckAny(monitor)
 }

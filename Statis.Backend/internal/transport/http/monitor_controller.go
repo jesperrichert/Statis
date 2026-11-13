@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -30,7 +31,7 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 	for i := range m {
 		monitor := m[i]
 
-		var effects []dto.MonitorEffect
+		var effects = make([]dto.MonitorEffect, 0)
 		for k, v := range monitor.EffectedBy {
 			effects = append(effects, dto.MonitorEffect{
 				Name: k, Link: v,
@@ -43,7 +44,7 @@ func (c *MonitorController) Get(ctx *gin.Context) {
 			Group:       monitor.Group,
 			Name:        monitor.Name,
 			Description: monitor.Description,
-			Type:        monitor.Type,
+			Type:        strings.ToUpper(monitor.Type),
 			ExternalUrl: monitor.ExternalUrl,
 			TypeData:    monitor.TypeData,
 			State:       monitor.State,
@@ -70,10 +71,12 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		util.CheckNull(body.ScheduleTime) ||
 		util.CheckNull(body.Type) ||
 		util.CheckNull(body.TypeData) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid"})
 		return
 	}
-	if !monitors.ToType(body.Type).IsTypeDtoValid(body) {
+	if !monitors.ToType(body.Type).IsTypeDtoValid(body) ||
+		body.TypeData == nil ||
+		util.IsEmpty(body.TypeData) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid monitor type"})
 		return
 	}

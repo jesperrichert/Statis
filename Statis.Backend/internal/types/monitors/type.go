@@ -4,15 +4,18 @@ import (
 	"encoding/json"
 
 	"jespersen.zip.statis/internal/dto"
+	"jespersen.zip.statis/internal/util"
 )
 
 type MonitorType int
 
-type DummyMonitor struct {}
+type DummyMonitor struct{}
 
 type HttpMonitor struct {
 	Method string `json:"method"`
 	Url    string `json:"url"`
+	Body   string `json:"body"`
+	Status int    `json:"status"`
 }
 
 type TcpMonitor struct {
@@ -50,39 +53,16 @@ func (mt MonitorType) IsTypeDtoValid(monitor dto.MonitorDto[any]) bool {
 	bytes, _ = json.Marshal(monitor)
 	switch mt {
 	case Group:
-		{
-			var d dto.MonitorDto[DummyMonitor]
-			err := json.Unmarshal(bytes, &d)
-			if err == nil {
-				return true
-			}
-		}
+		return util.CanUnmarshalAs[dto.MonitorDto[DummyMonitor]](bytes)
 	case Tcp:
-		{
-			err := json.Unmarshal(bytes, &dto.MonitorDto[TcpMonitor]{})
-			if err == nil {
-				return true
-			}
-		}
+		return util.CanUnmarshalAs[dto.MonitorDto[TcpMonitor]](bytes)
 	case Http:
-		{
-			err := json.Unmarshal(bytes, &dto.MonitorDto[HttpMonitor]{})
-			if err == nil {
-				return true
-			}
-		}
+		return util.CanUnmarshalAs[dto.MonitorDto[HttpMonitor]](bytes)
 	case Ping:
-		{
-			err := json.Unmarshal(bytes, &dto.MonitorDto[PingMonitor]{})
-			if err == nil {
-				return true
-			}
-		}
+		return util.CanUnmarshalAs[dto.MonitorDto[PingMonitor]](bytes)
 	default:
 		return false
 	}
-
-	return false
 }
 
 func ToType(name string) MonitorType {

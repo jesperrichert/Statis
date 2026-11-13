@@ -25,10 +25,10 @@ export enum MonitorState {
 }
 
 export enum MonitorType {
-    GROUP = "group",
-    TCP = "tcp",
-    HTTP = "http",
-    PING = "ping",
+    GROUP = "GROUP",
+    TCP = "TCP",
+    HTTP = "HTTP",
+    PING = "PING",
 }
 
 export const MonitorStateStyles: Record<

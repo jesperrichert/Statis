@@ -14,6 +14,11 @@ RUN bun run build
 FROM base AS backend
 WORKDIR /Statis.Backend
 
+COPY /Statis.Backend/go.mod /Statis.Backend/go.mod
+COPY /Statis.Backend/go.sum /Statis.Backend/go.sum
+
+RUN go mod download
+
 COPY /Statis.Backend /Statis.Backend
 
 RUN go build cmd/main.go 

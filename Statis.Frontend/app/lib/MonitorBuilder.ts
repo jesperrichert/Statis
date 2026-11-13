@@ -18,24 +18,18 @@ export class MonitorBuilder {
                 return this.buildGroupMonitor(this.monitor)
             }
             case MonitorType.HTTP: {
-                return this.buildHttpMonitor(this.monitor)
+                return this.buildMonitor(this.monitor)
             }
             case MonitorType.TCP: {
-                return this.buildTcpMonitor(this.monitor)
+                return this.buildMonitor(this.monitor)
             }
             case MonitorType.PING: {
-                return this.buildPingMonitor(this.monitor)
+                return this.buildMonitor(this.monitor)
             }
         }
     }
 
-    private buildTcpMonitor(data: Monitor) {
-        return MonitorRow({
-            monitor: data
-        })
-    }
-
-    private buildHttpMonitor(data: Monitor) {
+    private buildMonitor(data: Monitor) {
         return MonitorRow({
             monitor: data
         })
@@ -47,11 +41,4 @@ export class MonitorBuilder {
             children: this.otherMonitors.filter((m) => m.group == data.identifier)
         })
     }
-
-    private buildPingMonitor(data: Monitor) {
-        return MonitorRow({
-            monitor: data
-        })
-    }
-
 }

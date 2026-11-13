@@ -3,10 +3,11 @@ package checks
 import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/types/monitors"
 )
 
 type PingCheck struct {
-	ICheck
+	ICheck[monitors.PingMonitor]
 	DB *gorm.DB
 }
 
@@ -16,6 +17,6 @@ func NewPingCheck(db *gorm.DB) *PingCheck {
 	}
 }
 
-func (s *PingCheck) Check(monitor *model.Monitor[any]) {
+func (s *PingCheck) Check(monitor model.Monitor[monitors.PingMonitor]) {
 
 }
