@@ -8,8 +8,7 @@ import (
 
 type MonitorType int
 
-type DummyMonitor struct {
-}
+type DummyMonitor struct {}
 
 type HttpMonitor struct {
 	Method string `json:"method"`
@@ -52,7 +51,8 @@ func (mt MonitorType) IsTypeDtoValid(monitor dto.MonitorDto[any]) bool {
 	switch mt {
 	case Group:
 		{
-			err := json.Unmarshal(bytes, &dto.MonitorDto[DummyMonitor]{})
+			var d dto.MonitorDto[DummyMonitor]
+			err := json.Unmarshal(bytes, &d)
 			if err == nil {
 				return true
 			}

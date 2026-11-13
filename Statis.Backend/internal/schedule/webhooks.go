@@ -45,14 +45,14 @@ func (s *WebhookScheduler) Setup() {
 }
 
 func (s *WebhookScheduler) ScheduleWebhook(webhook model.Webhook) {
-	var m []model.Monitor
+	var m []model.Monitor[any]
 	s.DB.Find(&m)
 	for i := range m {
 		s.newJob(webhook, m[i])
 	}
 }
 
-func (s *WebhookScheduler) ScheduleMonitor(monitor model.Monitor) {
+func (s *WebhookScheduler) ScheduleMonitor(monitor model.Monitor[any]) {
 	var webhooks []model.Webhook
 	s.DB.Find(&webhooks)
 	for i := range webhooks {
@@ -60,7 +60,7 @@ func (s *WebhookScheduler) ScheduleMonitor(monitor model.Monitor) {
 	}
 }
 
-func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor) {
+func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor[any]) {
 	key := string(rune(webhook.ID)) + webhook.Identifier + monitor.Identifier
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
@@ -68,7 +68,7 @@ func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor) 
 		),
 		gocron.NewTask(
 			func(webhookIdentifier string, monitorIdentifier string) {
-				var monitorEntity model.Monitor
+				var monitorEntity model.Monitor[any]
 				var webhookEntity model.Webhook
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
 				s.DB.Where("identifier = ?", webhookIdentifier).First(&webhookEntity)

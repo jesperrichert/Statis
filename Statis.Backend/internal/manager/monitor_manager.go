@@ -16,6 +16,6 @@ func NewMonitorManager(checker map[monitors.MonitorType]checks.ICheck) *MonitorM
 	}
 }
 
-func (m *MonitorManager) Check(monitor *model.Monitor) {
+func (m *MonitorManager) Check(monitor *model.Monitor[any]) {
 	m.Checker[monitors.ToType(monitor.Type)].Check(monitor)
 }

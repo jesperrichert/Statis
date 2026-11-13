@@ -16,6 +16,6 @@ func NewPingCheck(db *gorm.DB) *PingCheck {
 	}
 }
 
-func (s *PingCheck) Check(monitor *model.Monitor) {
+func (s *PingCheck) Check(monitor *model.Monitor[any]) {
 
 }

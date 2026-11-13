@@ -16,6 +16,6 @@ func NewTCPCheck(db *gorm.DB) *TCPCheck {
 	}
 }
 
-func (s *TCPCheck) Check(monitor *model.Monitor) {
+func (s *TCPCheck) Check(monitor *model.Monitor[any]) {
 
 }

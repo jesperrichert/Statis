@@ -27,7 +27,7 @@ func NewMonitorScheduler(db *gorm.DB, monitorManager *manager.MonitorManager) *M
 }
 
 func (s *MonitorScheduler) Setup() {
-	var m []model.Monitor
+	var m []model.Monitor[any]
 	s.DB.Find(&m)
 	for i := range m {
 		s.ScheduleMonitor(m[i])
@@ -37,11 +37,11 @@ func (s *MonitorScheduler) Setup() {
 	s.Scheduler.Start()
 }
 
-func (s *MonitorScheduler) ScheduleMonitor(monitor model.Monitor) {
+func (s *MonitorScheduler) ScheduleMonitor(monitor model.Monitor[any]) {
 	s.newJob(monitor)
 }
 
-func (s *MonitorScheduler) newJob(monitor model.Monitor) {
+func (s *MonitorScheduler) newJob(monitor model.Monitor[any]) {
 	key := string(rune(monitor.ID)) + monitor.Identifier
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
@@ -49,7 +49,7 @@ func (s *MonitorScheduler) newJob(monitor model.Monitor) {
 		),
 		gocron.NewTask(
 			func(monitorIdentifier string) {
-				var monitorEntity model.Monitor
+				var monitorEntity model.Monitor[any]
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
 				s.MonitorManager.Check(&monitorEntity)
 			},

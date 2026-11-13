@@ -23,7 +23,7 @@ func NewMonitorController(db *gorm.DB) *MonitorController {
 
 // GET
 func (c *MonitorController) Get(ctx *gin.Context) {
-	var m []model.Monitor
+	var m []model.Monitor[any]
 	c.DB.Find(&m)
 
 	dtos := make([]dto.MonitorDto[any], 0)
@@ -78,8 +78,8 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		return
 	}
 
-	var monitor model.Monitor
-	c.DB.Where(&model.Monitor{}).Where("identifier = ?", body.Identifier).First(&monitor)
+	var monitor model.Monitor[any]
+	c.DB.Where(&model.Monitor[any]{}).Where("identifier = ?", body.Identifier).First(&monitor)
 	if len(monitor.Identifier) > 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Monitor already exists!"})
 		return
@@ -89,7 +89,7 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		effects[body.EffectedBy[i].Name] = body.EffectedBy[i].Link
 	}
 
-	c.DB.Create(&model.Monitor{
+	c.DB.Create(&model.Monitor[any]{
 		Identifier:  body.Identifier,
 		IsParent:    body.IsParent,
 		Group:       body.Group,

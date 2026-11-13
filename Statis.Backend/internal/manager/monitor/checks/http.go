@@ -16,6 +16,6 @@ func NewHttpCheck(db *gorm.DB) *HttpCheck {
 	}
 }
 
-func (s *HttpCheck) Check(monitor *model.Monitor) {
+func (s *HttpCheck) Check(monitor *model.Monitor[any]) {
 
 }

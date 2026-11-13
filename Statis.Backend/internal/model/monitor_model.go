@@ -1,6 +1,6 @@
 package model
 
-type Monitor[TD] struct {
+type Monitor[TD any] struct {
 	ID           int `gorm:"primaryKey"`
 	Identifier   string
 	IsParent     bool
@@ -9,12 +9,12 @@ type Monitor[TD] struct {
 	Description  string
 	Type         string // MonitorType
 	ScheduleTime int
-	TypeData     TD               `gorm:"serializer:json"`
+	TypeData     TD                `gorm:"serializer:json"`
 	State        string            // MonitorState
 	EffectedBy   map[string]string `gorm:"serializer:json"`
 	ExternalUrl  string
 }
 
-func (Monitor) TableName() string {
-    return "Monitor"
+func (Monitor[any]) TableName() string {
+	return "monitors"
 }

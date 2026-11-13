@@ -12,6 +12,6 @@ func NewDummyCheck() *DummyCheck {
 	return &DummyCheck{}
 }
 
-func (s *DummyCheck) Check(monitor *model.Monitor) {
+func (s *DummyCheck) Check(monitor *model.Monitor[any]) {
 
 }
