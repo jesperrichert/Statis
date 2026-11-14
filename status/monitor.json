@@ -1,13 +1,13 @@
 [
   {
-    "id": "disbot",
+    "identifier": "disbot",
     "is_parent": true,
     "group": "disbot",
     "name": "DisBot",
     "type": "group"
   },
   {
-    "id": "disbotweb",
+    "identifier": "disbotweb",
     "is_parent": false,
     "group": "disbot",
     "name": "disbot.app",
@@ -16,7 +16,7 @@
     "check_data": "disbot.app"
   },
   {
-    "id": "crystopia",
+    "identifier": "crystopia",
     "is_parent": true,
     "group": "crystopia",
     "name": "Crystopia",
