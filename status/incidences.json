@@ -1,3 +1,7 @@
 [
-  "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidence/sdfsdf.mdx"
+  {
+    "identifier": "testy",
+    "event_identifier": "sdfsdf",
+    "Content": "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidence/sdfsdf.mdx"
+  }
 ]
