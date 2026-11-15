@@ -1,6 +1,6 @@
 package dto
 
-type MonitorDto[TD any] struct {
+type MonitorDto[T any] struct {
 	Identifier   string          `json:"identifier"`
 	IsParent     bool            `json:"is_parent"`
 	Group        string          `json:"group"`
@@ -8,9 +8,10 @@ type MonitorDto[TD any] struct {
 	Description  string          `json:"description"`
 	Type         string          `json:"type"` // MonitorType
 	ScheduleTime int             `json:"schedule_time"`
-	TypeData     TD              `json:"type_data"`
+	TypeData     T               `json:"type_data"`
 	State        string          `json:"state"` // MonitorState
-	EffectedBy   []MonitorEffect `json:"effected_by"`
+	Events       []string        `json:"events"`
+	AffectedBy   []MonitorEffect `json:"affected_by"`
 	ExternalUrl  string          `json:"external_url"`
 }
 

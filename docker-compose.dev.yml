@@ -3,8 +3,11 @@ services:
     container_name: statis
     image: ghcr.io/jesperrichert/statis:latest
     environment:
+      DISABLE_FRONTEND: false
+      AUTO_CONFIG_INTERVAL: 30 # seconds
+      WEBHOOKS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/webhooks.json"
       EVENTS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/events.json"
-      INCIDENCE_DIRECTORY: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidence/{page}.mdx"
+      INCIDENCES: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidences.json"
       MONITORS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/monitor.json"
     volumes:
       - "./storage/db.sqlite:/app/db.sqlite"

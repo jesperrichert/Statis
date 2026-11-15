@@ -21,9 +21,13 @@ func (c *RouterConfig) Setup() {
 
 	api := c.App.Group("/api")
 	{
+		// Badges
+		// Polling
+
 		notifications := api.Group("/notifications")
 		{
 			notifications.POST("/webhooks", middleware.DefaultMiddleware, c.NotificationsController.WebhookPost)
+			notifications.POST("/:id", middleware.DefaultMiddleware, c.NotificationsController.UpdateWebhook)
 		}
 
 		status := api.Group("/status")
@@ -32,49 +36,21 @@ func (c *RouterConfig) Setup() {
 			{
 				monitors.GET("/", c.MonitorController.Get)
 				monitors.POST("/", middleware.DefaultMiddleware, c.MonitorController.Post)
+				monitors.POST("/:id", middleware.DefaultMiddleware, c.MonitorController.Update)
 			}
 
 			events := status.Group("/events")
 			{
 				events.GET("/", c.EventsController.Get)
-				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Get)
+				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Post)
+				events.POST("/:id", middleware.DefaultMiddleware, c.EventsController.Update)
 			}
 
 			incidences := status.Group("/incidences")
 			{
 				incidences.GET("/:id", c.IncidencesController.Get)
 				incidences.POST("/", middleware.DefaultMiddleware, c.IncidencesController.Post)
-			}
-		}
-	}
-
-}
-
-func (c *RouterConfig) Post() {
-	if c.App == nil {
-		c.App = gin.Default()
-	}
-
-	api := c.App.Group("/api")
-	{
-		status := api.Group("/status")
-		{
-			monitors := status.Group("/monitors")
-			{
-				monitors.GET("/", c.MonitorController.Get)
-				monitors.POST("/", middleware.DefaultMiddleware, c.MonitorController.Post)
-			}
-
-			events := status.Group("/events")
-			{
-				events.GET("/", c.EventsController.Get)
-				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Get)
-			}
-
-			incidences := status.Group("/incidences")
-			{
-				incidences.GET("/:id", c.IncidencesController.Get)
-				incidences.POST("/", middleware.DefaultMiddleware, c.IncidencesController.Post)
+				incidences.POST("/:id", middleware.DefaultMiddleware, c.IncidencesController.Update)
 			}
 		}
 	}

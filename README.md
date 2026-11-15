@@ -1,3 +1,4 @@
-# Go-go-vite-rr
+# Statis
 
-a go-vite-rr for a go api Project with gin and gorm
+[<img alt="CodeFactor" src="https://www.codefactor.io/repository/github/jesperrichert/statis/badge"/>](https://www.codefactor.io/repository/github/jesperrichert/statis)
+

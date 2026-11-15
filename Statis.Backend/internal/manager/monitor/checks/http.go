@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"gorm.io/gorm"
+	"jespersen.zip.statis/internal"
 	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/types/monitors"
 )
@@ -20,10 +21,11 @@ func NewHttpCheck(db *gorm.DB) *HttpCheck {
 	}
 }
 
-func (s *HttpCheck) Check(monitor model.Monitor[monitors.HttpMonitor]) {
+func (s *HttpCheck) Check(monitor *model.Monitor[monitors.HttpMonitor]) {
 	m := monitor
 	client := http.Client{}
 	req, err := http.NewRequest(m.TypeData.Method, m.TypeData.Url, strings.NewReader(m.TypeData.Body))
+	req.Header.Add("User-Agent", "Statis/"+internal.VERSION)
 	res, err := client.Do(req)
 	if err != nil {
 		m.State = monitors.Offline.ToString()
@@ -40,5 +42,5 @@ func (s *HttpCheck) Check(monitor model.Monitor[monitors.HttpMonitor]) {
 		}
 	}
 
-	s.DB.Where("identifier = ?", m.Identifier).Updates(&m)
+	s.DB.Where("identifier = ?", m.Identifier).Updates(m.ToModel())
 }

@@ -6,14 +6,14 @@ const (
 	Online   MonitorState = iota
 	Offline  MonitorState = iota
 	Degraded MonitorState = iota
-	Effected MonitorState = iota
+	Affected MonitorState = iota
 )
 
 var monitorStateName = map[MonitorState]string{
-	Degraded: "degraded",
-	Offline:  "offline",
-	Online:   "online",
-	Effected: "effected",
+	Degraded: "DEGRADED",
+	Offline:  "OFFLINE",
+	Online:   "ONLINE",
+	Affected: "AFFECTED",
 }
 
 func (mt MonitorState) ToString() string {

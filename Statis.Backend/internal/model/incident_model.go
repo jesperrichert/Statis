@@ -1,9 +1,11 @@
 package model
 
-type Incident struct {
+type IncidentModel struct {
 	ID         int `gorm:"primaryKey"`
 	Identifier string
 	Content    string
 	EventID    int
-	Event      *Event
+	Event      *EventModel
 }
+
+func (IncidentModel) TableName() string { return "incidents" }

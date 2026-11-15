@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/manager"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/types/monitors"
+	"jespersen.zip.statis/internal/util"
 )
 
 type MonitorScheduler struct {
@@ -27,31 +29,49 @@ func NewMonitorScheduler(db *gorm.DB, monitorManager *manager.MonitorManager) *M
 }
 
 func (s *MonitorScheduler) Setup() {
-	var m []model.Monitor[any]
+	var m []model.MonitorModel
 	s.DB.Find(&m)
 	for i := range m {
-		s.ScheduleMonitor(m[i])
+		monitor := model.Monitor[any](m[i])
+		s.ScheduleMonitor(&monitor)
 	}
 
 	println("[MONITOR CRON] Started!")
 	s.Scheduler.Start()
 }
 
-func (s *MonitorScheduler) ScheduleMonitor(monitor model.Monitor[any]) {
+func (s *MonitorScheduler) ScheduleMonitor(monitor *model.Monitor[any]) {
 	s.newJob(monitor)
 }
 
-func (s *MonitorScheduler) newJob(monitor model.Monitor[any]) {
-	key := string(rune(monitor.ID)) + monitor.Identifier
+func (s *MonitorScheduler) Key(monitor *model.Monitor[any]) string {
+	return string(rune(monitor.ID)) + monitor.Identifier
+}
+
+func (s *MonitorScheduler) newJob(m *model.Monitor[any]) {
+	monitor := m
+	if monitors.ToType(monitor.Type) == monitors.Group ||
+		monitors.ToType(monitor.Type) == monitors.Unkown {
+		return
+
+	}
+
+	key := s.Key(monitor)
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
 			time.Duration(monitor.ScheduleTime)*time.Second,
 		),
 		gocron.NewTask(
 			func(monitorIdentifier string) {
-				var monitorEntity model.Monitor[any]
+				var monitorEntity model.MonitorModel
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
-				s.MonitorManager.Check(monitorEntity)
+				me := model.Monitor[any](monitorEntity)
+
+				if util.CheckNull(monitorEntity.Identifier) {
+					_ = s.Scheduler.RemoveJob(s.Jobs[key].ID())
+					return
+				}
+				s.MonitorManager.Check(&me)
 			},
 			monitor.Identifier,
 		),

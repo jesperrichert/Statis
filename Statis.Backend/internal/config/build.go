@@ -30,9 +30,11 @@ func Build(config *StatisConfig) {
 	monitorScheduler.Setup()
 	webhookScheduler := schedule.NewWebhookScheduler(config.DB)
 	webhookScheduler.Setup()
+	autoConfigureScheduler := schedule.NewAutoConfigureScheduler(config.DB)
+	autoConfigureScheduler.Setup()
 
 	// Register Controller
-	monitorController := http.NewMonitorController(config.DB)
+	monitorController := http.NewMonitorController(config.DB, monitorScheduler)
 	eventsController := http.NewEventsController(config.DB)
 	incidencesController := http.NewIncidencesController(config.DB)
 	notificationsController := http.NewNotificationsController(config.DB, webhookScheduler)

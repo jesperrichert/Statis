@@ -1,7 +1,9 @@
 package http
 
 import (
+	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -25,7 +27,7 @@ func (c *IncidencesController) Get(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 
-	var incident model.Incident
+	var incident model.IncidentModel
 	c.DB.Where("identifier = ?", id).First(&incident)
 
 	ctx.Data(http.StatusOK, "text/plain", []byte(incident.Content))
@@ -41,25 +43,80 @@ func (c *IncidencesController) Post(ctx *gin.Context) {
 		return
 	}
 	if util.CheckNull(body.Identifier) ||
-		util.CheckNull(body.EventId) ||
+		util.CheckNull(body.EventIdentifier) ||
 		util.CheckNull(body.Content) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid})"})
 		return
 	}
 
-	var event model.Incident
-	c.DB.Where("identifier = ?", body.EventId).First(&event)
+	if strings.HasPrefix(body.Content, "http") &&
+		strings.HasSuffix(body.Content, ".mdx") {
+		req, _ := http.Get(body.Content)
+		defer req.Body.Close()
+		bytes, _ := io.ReadAll(req.Body)
+		body.Content = string(bytes)
+	}
 
-	if len(event.Identifier) > 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no event found"})
+	var incident model.IncidentModel
+	c.DB.Where("identifier = ?", body.Identifier).First(&incident)
+	if len(incident.Identifier) > 0 {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "incident already exists!"})
 		return
 	}
 
-	c.DB.Create(&model.Incident{
+	var event model.EventModel
+	c.DB.Where("identifier = ?", body.EventIdentifier).First(&event)
+	if len(event.Identifier) <= 0 {
+		ctx.JSON(http.StatusNoContent, gin.H{"error": "no event found"})
+		return
+	}
+
+	c.DB.Create(&model.IncidentModel{
 		Identifier: body.Identifier,
 		Content:    body.Content,
 		EventID:    event.ID,
 	})
+	c.DB.Where("identifier = ?", body.Identifier).First(&incident)
+	event.IncidentID = incident.ID
+	c.DB.Where("id = ?", event.ID).Updates(&event)
 
 	ctx.JSON(http.StatusCreated, gin.H{})
+}
+
+// Post
+func (c *IncidencesController) Update(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var incident model.IncidentModel
+	c.DB.Where("identifier = ?", id).First(&incident)
+	if util.CheckNull(incident.Identifier) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "incident not found"})
+		return
+	}
+
+	var body dto.IncidentDto
+	err := ctx.BindJSON(&body)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid dto"})
+		return
+	}
+
+	if !util.CheckNull(body.Content) {
+		if strings.HasPrefix(body.Content, "http") &&
+			strings.HasSuffix(body.Content, ".mdx") {
+			req, _ := http.Get(body.Content)
+			defer req.Body.Close()
+			bytes, _ := io.ReadAll(req.Body)
+			body.Content = string(bytes)
+		}
+	}
+	if !util.CheckNull(body.EventIdentifier) {
+		var event model.EventModel
+		c.DB.Where("identifier = ?", body.EventIdentifier).First(&event)
+		if len(event.Identifier) > 0 {
+			incident.EventID = event.ID
+			event.IncidentID = incident.ID
+			c.DB.Where("id = ?", event.ID).Updates(&event)
+		}
+	}
+	c.DB.Where("id = ?", incident.ID).Updates(&incident)
 }

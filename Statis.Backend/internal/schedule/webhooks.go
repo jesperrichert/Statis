@@ -34,49 +34,54 @@ func NewWebhookScheduler(db *gorm.DB) *WebhookScheduler {
 }
 
 func (s *WebhookScheduler) Setup() {
-	var webhooks []model.Webhook
+	var webhooks []model.WebhookModel
 	s.DB.Find(&webhooks)
 	for i := range webhooks {
-		s.ScheduleWebhook(webhooks[i])
+		s.ScheduleWebhook(&webhooks[i])
 	}
 
 	println("[WEBHOOK CRON] Started!")
 	s.Scheduler.Start()
 }
 
-func (s *WebhookScheduler) ScheduleWebhook(webhook model.Webhook) {
-	var m []model.Monitor[any]
-	s.DB.Find(&m)
-	for i := range m {
-		s.newJob(webhook, m[i])
+func (s *WebhookScheduler) ScheduleWebhook(webhook *model.WebhookModel) {
+	var monitorModels []model.MonitorModel
+	s.DB.Find(&monitorModels)
+	for i := range monitorModels {
+		monitor := model.Monitor[any](monitorModels[i])
+		s.newJob(webhook, &monitor)
 	}
 }
 
-func (s *WebhookScheduler) ScheduleMonitor(monitor model.Monitor[any]) {
-	var webhooks []model.Webhook
+func (s *WebhookScheduler) ScheduleMonitor(monitor *model.Monitor[any]) {
+	var webhooks []model.WebhookModel
 	s.DB.Find(&webhooks)
 	for i := range webhooks {
-		s.newJob(webhooks[i], monitor)
+		s.newJob(&webhooks[i], monitor)
 	}
 }
 
-func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor[any]) {
-	key := string(rune(webhook.ID)) + webhook.Identifier + monitor.Identifier
+func (s *WebhookScheduler) Key(webhook *model.WebhookModel, monitor *model.Monitor[any]) string {
+	return string(rune(webhook.ID)) + webhook.Identifier + ":" + monitor.Identifier
+}
+
+func (s *WebhookScheduler) newJob(webhook *model.WebhookModel, monitor *model.Monitor[any]) {
+	key := s.Key(webhook, monitor)
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
 			1*time.Second,
 		),
 		gocron.NewTask(
 			func(webhookIdentifier string, monitorIdentifier string) {
-				var monitorEntity model.Monitor[any]
-				var webhookEntity model.Webhook
+				var monitorEntity model.MonitorModel
+				var webhookEntity model.WebhookModel
 				s.DB.Where("identifier = ?", monitorIdentifier).First(&monitorEntity)
 				s.DB.Where("identifier = ?", webhookIdentifier).First(&webhookEntity)
 
 				if util.CheckNull(monitorEntity.Identifier) ||
-					util.CheckNull(monitorEntity.State) ||
 					util.CheckNull(webhookEntity.Identifier) ||
 					util.CheckNull(webhookEntity.Url) {
+					_ = s.Scheduler.RemoveJob(s.Jobs[key].Job.ID())
 					return
 				}
 
@@ -86,8 +91,16 @@ func (s *WebhookScheduler) newJob(webhook model.Webhook, monitor model.Monitor[a
 						State: monitors.ToState(monitorEntity.State),
 					}
 
-					reader := bytes.NewReader([]byte(webhookEntity.JSONTemplate))
-					post, _ := http.Post(webhookEntity.Url, "application/json", reader)
+					json := util.ReplacePlaceholders(
+						webhookEntity.JSONTemplate,
+						monitorEntity.Placeholders(),
+					)
+
+					reader := bytes.NewReader([]byte(json))
+					post, err := http.Post(webhookEntity.Url, "application/json", reader)
+					if err != nil {
+						return
+					}
 					fmt.Println("Webhook ("+webhookEntity.Identifier+") has been send.. Code:", post.StatusCode)
 				}
 			},

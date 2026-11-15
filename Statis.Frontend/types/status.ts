@@ -8,20 +8,21 @@ export type Monitor = {
     schedule_time: number;
     type_data: any | null;
     state: MonitorState;
-    effected_by: MonitorEffect[];
+    events: string[];
+    affected_by: MonitorAffect[]
     external_url: string | null;
 };
 
-export type MonitorEffect = {
+export type MonitorAffect = {
     name: string
     link: string
 }
 
 export enum MonitorState {
-    ONLINE = "online",
-    OFFLINE = "offline",
-    DEGRADED = "degraded",
-    EFFECTED = "effected",
+    ONLINE = "ONLINE",
+    OFFLINE = "OFFLINE",
+    DEGRADED = "DEGRADED",
+    AFFECTED = "AFFECTED",
 }
 
 export enum MonitorType {
@@ -40,10 +41,10 @@ export const MonitorStateStyles: Record<
         text: "bg-orange-500/10 text-orange-400",
         name: "Degraded",
     },
-    [MonitorState.EFFECTED]: {
+    [MonitorState.AFFECTED]: {
         color: "bg-yellow-500",
         text: "bg-yellow-500/10 text-yellow-400",
-        name: "Effected",
+        name: "Affected",
     },
     [MonitorState.OFFLINE]: {
         color: "bg-red-400",

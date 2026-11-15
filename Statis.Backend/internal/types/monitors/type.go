@@ -20,12 +20,11 @@ type HttpMonitor struct {
 
 type TcpMonitor struct {
 	Host string `json:"host"`
-	Port string `json:"port"`
+	Port int    `json:"port"`
 }
 
 type PingMonitor struct {
 	Host string `json:"host"`
-	Port string `json:"port"`
 }
 
 const (

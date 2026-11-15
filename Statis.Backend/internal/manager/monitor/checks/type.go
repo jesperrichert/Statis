@@ -7,11 +7,11 @@ import (
 )
 
 type ICheckBase interface {
-	CheckAny(monitor model.Monitor[any])
+	CheckAny(monitor *model.Monitor[any])
 }
 
 type ICheck[T any] interface {
-	Check(monitor model.Monitor[T])
+	Check(monitor *model.Monitor[T])
 }
 
 type CheckAdapter[T any] struct {
@@ -23,7 +23,7 @@ func NewCheckAdapter[T any](inner ICheck[T]) ICheckBase {
 	return &CheckAdapter[T]{inner: inner}
 }
 
-func (ca *CheckAdapter[T]) CheckAny(monitor model.Monitor[any]) {
+func (ca *CheckAdapter[T]) CheckAny(monitor *model.Monitor[any]) {
 	var bytes []byte
 	bytes, _ = json.Marshal(monitor)
 	var m model.Monitor[T]
@@ -31,5 +31,5 @@ func (ca *CheckAdapter[T]) CheckAny(monitor model.Monitor[any]) {
 	if err != nil {
 		return
 	}
-	ca.inner.Check(m)
+	ca.inner.Check(&m)
 }

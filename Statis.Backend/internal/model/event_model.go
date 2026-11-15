@@ -1,12 +1,15 @@
 package model
 
-type Event struct {
+type EventModel struct {
 	ID          int `gorm:"primaryKey"`
 	Identifier  string
 	Title       string
 	Description string
 	Type        string // EventType
 	Date        string
+	Monitors    []*MonitorModel `gorm:"many2many:monitor_events;"`
 	IncidentID  int
-	Incident    Incident
+	Incident    IncidentModel
 }
+
+func (EventModel) TableName() string { return "events" }
