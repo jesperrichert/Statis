@@ -122,7 +122,7 @@ func (s *AutoConfigureScheduler) autoConfigure(configUrl, postUrl, updateUrl str
 	}
 	client := &http.Client{}
 
-	var dtos []map[string]interface{}
+	var dtos []map[string]any
 
 	configData, _ := http.Get(configUrl)
 	body, _ := io.ReadAll(configData.Body)
@@ -140,8 +140,8 @@ func (s *AutoConfigureScheduler) autoConfigure(configUrl, postUrl, updateUrl str
 		}
 		if res.StatusCode == http.StatusConflict {
 			var identifier string
-			for k, v := range dtos[0] {
-				if k == "Identifier" {
+			for k, v := range dtos[i] {
+				if k == "identifier" {
 					identifier = v.(string)
 				}
 			}
