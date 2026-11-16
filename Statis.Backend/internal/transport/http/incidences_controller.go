@@ -51,7 +51,11 @@ func (c *IncidencesController) Post(ctx *gin.Context) {
 
 	if strings.HasPrefix(body.Content, "http") &&
 		strings.HasSuffix(body.Content, ".mdx") {
-		req, _ := http.Get(body.Content)
+		req, err := http.Get(body.Content)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{})
+			return
+		}
 		defer req.Body.Close()
 		bytes, _ := io.ReadAll(req.Body)
 		body.Content = string(bytes)
@@ -103,7 +107,11 @@ func (c *IncidencesController) Update(ctx *gin.Context) {
 	if !util.CheckNull(body.Content) {
 		if strings.HasPrefix(body.Content, "http") &&
 			strings.HasSuffix(body.Content, ".mdx") {
-			req, _ := http.Get(body.Content)
+			req, err := http.Get(body.Content)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{})
+				return
+			}
 			defer req.Body.Close()
 			bytes, _ := io.ReadAll(req.Body)
 			body.Content = string(bytes)

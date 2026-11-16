@@ -96,6 +96,7 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid"})
 		return
 	}
+
 	if !monitors.ToType(body.Type).IsTypeDtoValid(body) ||
 		body.TypeData == nil ||
 		util.IsEmpty(body.TypeData) {

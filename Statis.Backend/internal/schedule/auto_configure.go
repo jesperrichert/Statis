@@ -122,18 +122,15 @@ func (s *AutoConfigureScheduler) autoConfigure(configUrl, postUrl, updateUrl str
 	}
 	client := &http.Client{}
 
-	var dtos []struct {
-		Identifier string `json:"identifier"`
-		any
-	}
+	var dtos []map[string]interface{}
+
 	configData, _ := http.Get(configUrl)
 	body, _ := io.ReadAll(configData.Body)
-
-	// TODO: Fix Identifier update for created models...
 
 	_ = json.Unmarshal(body, &dtos)
 	for i := range dtos {
 		b, _ := json.Marshal(dtos[i])
+
 		req, _ := http.NewRequest("POST", postUrl, bytes.NewReader(b))
 		req.Header.Add("Authorization", authToken)
 		res, err := client.Do(req)
@@ -142,7 +139,13 @@ func (s *AutoConfigureScheduler) autoConfigure(configUrl, postUrl, updateUrl str
 			return
 		}
 		if res.StatusCode == http.StatusConflict {
-			req, _ = http.NewRequest("POST", strings.ReplaceAll(updateUrl, "{identifier}", dtos[i].Identifier), bytes.NewReader(b))
+			var identifier string
+			for k, v := range dtos[0] {
+				if k == "Identifier" {
+					identifier = v.(string)
+				}
+			}
+			req, _ = http.NewRequest("POST", strings.ReplaceAll(updateUrl, "{identifier}", identifier), bytes.NewReader(b))
 			req.Header.Add("Authorization", authToken)
 			_, _ = client.Do(req)
 		}

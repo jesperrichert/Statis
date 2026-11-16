@@ -50,7 +50,11 @@ func (c *NotificationsController) WebhookPost(ctx *gin.Context) {
 
 	if strings.HasPrefix(body.JSONTemplate, "http") &&
 		strings.HasSuffix(body.JSONTemplate, ".json") {
-		req, _ := http.Get(body.JSONTemplate)
+		req, err := http.Get(body.JSONTemplate)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{})
+			return
+		}
 		defer req.Body.Close()
 		bytes, _ := io.ReadAll(req.Body)
 		body.JSONTemplate = string(bytes)
@@ -86,7 +90,11 @@ func (c *NotificationsController) UpdateWebhook(ctx *gin.Context) {
 	if !util.CheckNull(body.JSONTemplate) {
 		if strings.HasPrefix(body.JSONTemplate, "http") &&
 			strings.HasSuffix(body.JSONTemplate, ".json") {
-			req, _ := http.Get(body.JSONTemplate)
+			req, err := http.Get(body.JSONTemplate)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{})
+				return
+			}
 			defer req.Body.Close()
 			bytes, _ := io.ReadAll(req.Body)
 			webhook.JSONTemplate = string(bytes)
