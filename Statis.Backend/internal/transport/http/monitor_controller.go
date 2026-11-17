@@ -9,6 +9,7 @@ import (
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/schedule"
+	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/types/events"
 	"jespersen.zip.statis/internal/types/monitors"
 	"jespersen.zip.statis/internal/util"
@@ -17,12 +18,14 @@ import (
 type MonitorController struct {
 	DB               *gorm.DB
 	MonitorScheduler *schedule.MonitorScheduler
+	MonitorService   *services.MonitorService
 }
 
-func NewMonitorController(db *gorm.DB, scheduler *schedule.MonitorScheduler) *MonitorController {
+func NewMonitorController(db *gorm.DB, scheduler *schedule.MonitorScheduler, service *services.MonitorService) *MonitorController {
 	return &MonitorController{
 		DB:               db,
 		MonitorScheduler: scheduler,
+		MonitorService:   service,
 	}
 }
 

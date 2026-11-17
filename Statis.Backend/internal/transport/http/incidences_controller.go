@@ -9,16 +9,19 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/util"
 )
 
 type IncidencesController struct {
-	DB *gorm.DB
+	DB              *gorm.DB
+	IncidentService *services.IncidentService
 }
 
-func NewIncidencesController(db *gorm.DB) *IncidencesController {
+func NewIncidencesController(db *gorm.DB, service *services.IncidentService) *IncidencesController {
 	return &IncidencesController{
-		DB: db,
+		DB:              db,
+		IncidentService: service,
 	}
 }
 
@@ -118,13 +121,23 @@ func (c *IncidencesController) Update(ctx *gin.Context) {
 		}
 	}
 	if !util.CheckNull(body.EventIdentifier) {
+		var oldEvent model.EventModel
+		c.DB.Where("identifier = ?", incident.EventID).First(&oldEvent)
+
 		var event model.EventModel
 		c.DB.Where("identifier = ?", body.EventIdentifier).First(&event)
 		if len(event.Identifier) > 0 {
 			incident.EventID = event.ID
 			event.IncidentID = incident.ID
 			c.DB.Where("id = ?", event.ID).Updates(&event)
+			oldEvent.IncidentID = 0
+			c.DB.Updates(&oldEvent)
 		}
+	} else {
+		var oldEvent model.EventModel
+		c.DB.Where("identifier = ?", incident.EventID).First(&oldEvent)
+		oldEvent.IncidentID = 0
+		c.DB.Updates(&oldEvent)
 	}
 	c.DB.Where("id = ?", incident.ID).Updates(&incident)
 }

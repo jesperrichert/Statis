@@ -10,18 +10,21 @@ import (
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/schedule"
+	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/util"
 )
 
 type NotificationsController struct {
 	DB               *gorm.DB
 	WebhookScheduler *schedule.WebhookScheduler
+	WebhookService   *services.WebhookService
 }
 
-func NewNotificationsController(db *gorm.DB, webhookScheduler *schedule.WebhookScheduler) *NotificationsController {
+func NewNotificationsController(db *gorm.DB, scheduler *schedule.WebhookScheduler, service *services.WebhookService) *NotificationsController {
 	return &NotificationsController{
 		DB:               db,
-		WebhookScheduler: webhookScheduler,
+		WebhookScheduler: scheduler,
+		WebhookService:   service,
 	}
 }
 

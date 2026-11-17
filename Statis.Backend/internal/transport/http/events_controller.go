@@ -7,16 +7,19 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/util"
 )
 
 type EventsController struct {
-	DB *gorm.DB
+	DB           *gorm.DB
+	EventService *services.EventService
 }
 
-func NewEventsController(db *gorm.DB) *EventsController {
+func NewEventsController(db *gorm.DB, service *services.EventService) *EventsController {
 	return &EventsController{
-		DB: db,
+		DB:           db,
+		EventService: service,
 	}
 }
 
@@ -139,5 +142,6 @@ func (c *EventsController) Update(ctx *gin.Context) {
 		}
 		event.Monitors = monitors
 	}
+	// TODO: Fix "Old Incidences remove"
 	c.DB.Where("id = ?", event.ID).Updates(&event)
 }

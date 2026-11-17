@@ -4,10 +4,10 @@ services:
     image: ghcr.io/jesperrichert/statis:latest
     environment:
       DISABLE_FRONTEND: false
-      AUTO_CONFIG_INTERVAL: 1 # seconds
+      AUTO_CONFIG_INTERVAL: 30 # seconds
       WEBHOOKS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/webhooks.json"
       EVENTS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/events.json"
-      INCIDENCES: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/incidences.json"
+      INCIDENCES: "https://jesperrichert.github.io/Statis/status/incidences.json"
       MONITORS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/monitor.json"
     volumes:
       - "./storage/db.sqlite:/app/db.sqlite"

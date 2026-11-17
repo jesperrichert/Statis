@@ -6,6 +6,7 @@ import (
 	"jespersen.zip.statis/internal/manager"
 	"jespersen.zip.statis/internal/manager/monitor/checks"
 	"jespersen.zip.statis/internal/schedule"
+	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/transport/http"
 	"jespersen.zip.statis/internal/transport/http/router"
 	"jespersen.zip.statis/internal/types/monitors"
@@ -33,11 +34,17 @@ func Build(config *StatisConfig) {
 	autoConfigureScheduler := schedule.NewAutoConfigureScheduler(config.DB)
 	autoConfigureScheduler.Setup()
 
+	// Service
+	webhookService := services.NewWebhookService(config.DB)
+	incidentService := services.NewIncidentService(config.DB)
+	monitorService := services.NewMonitorService(config.DB)
+	eventService := services.NewEventService(config.DB)
+
 	// Register Controller
-	monitorController := http.NewMonitorController(config.DB, monitorScheduler)
-	eventsController := http.NewEventsController(config.DB)
-	incidencesController := http.NewIncidencesController(config.DB)
-	notificationsController := http.NewNotificationsController(config.DB, webhookScheduler)
+	monitorController := http.NewMonitorController(config.DB, monitorScheduler, monitorService)
+	eventsController := http.NewEventsController(config.DB, eventService)
+	incidencesController := http.NewIncidencesController(config.DB, incidentService)
+	notificationsController := http.NewNotificationsController(config.DB, webhookScheduler, webhookService)
 
 	routerConfig := router.RouterConfig{
 		App:                     config.Api,

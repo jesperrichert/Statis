@@ -1,62 +1,56 @@
-import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import {Links, Meta, Outlet, Scripts, ScrollRestoration,} from "react-router";
 
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
+    {rel: "preconnect", href: "https://fonts.googleapis.com"},
+    {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+    },
+    {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <link rel="icon" href="/statis.svg" />
-        <title>Statis</title>
-        <meta name="description" content="Statis" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+export function Layout({children}: { children: React.ReactNode }) {
+    return (
+        <html lang="en">
+        <head>
+            <meta charSet="utf-8"/>
+            <link rel="icon" href="/statis.svg"/>
+            <title>Statis</title>
+            <meta name="description" content="Statis"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        <Meta />
-        <Links />
-      </head>
-      <body className="min-h-screen flex flex-col bg-linear-to-b from-zinc-950 to-zinc-900 text-zinc-100 transition-colors duration-300">
+            <Meta/>
+            <Links/>
+        </head>
+        <body
+            className="w-screen h-screen flex flex-col bg-linear-to-b from-zinc-950 to-zinc-900 text-zinc-100 transition-colors duration-300">
         {children}
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
-  );
+        <ScrollRestoration/>
+        <Scripts/>
+        </body>
+        </html>
+    );
 }
 
 export default function App() {
-  return <Outlet />;
+    return <Outlet/>;
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  return (
-    <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
-      <div className="text-center">
-        <p className="text-base font-semibold text-zinc-600">404</p>
-        <span className="mt-4 text-xl font-semibold tracking-tight text-balance text-zinc-600">
+export function ErrorBoundary({error}: Route.ErrorBoundaryProps) {
+    return (
+        <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
+            <div className="text-center">
+                <p className="text-base font-semibold text-zinc-600">404</p>
+                <span className="mt-4 text-xl font-semibold tracking-tight text-balance text-zinc-600">
           We can't provide any statis for this Page so pleas try again.
         </span>
-      </div>
-    </main>
-  );
+            </div>
+        </main>
+    );
 }
