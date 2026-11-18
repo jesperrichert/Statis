@@ -23,6 +23,18 @@ func NewNotificationsController(db *gorm.DB, service *services.WebhookService) *
 	}
 }
 
+// GET
+func (c *NotificationsController) GetWebhook(ctx *gin.Context) {
+
+	webhookDto, ok := c.WebhookService.GetWebhook(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, webhookDto)
+}
+
 // Post
 func (c *NotificationsController) WebhookPost(ctx *gin.Context) {
 
@@ -65,6 +77,18 @@ func (c *NotificationsController) UpdateWebhook(ctx *gin.Context) {
 	status = c.WebhookService.Update(ctx.Param("id"), &body)
 	if status != http.StatusCreated {
 		ctx.JSON(status, util.JsonResult("failed to create", map[string]any{}))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+// GET
+func (c *NotificationsController) DeleteWebhook(ctx *gin.Context) {
+
+	ok := c.WebhookService.DeleteWebhook(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{})
 		return
 	}
 

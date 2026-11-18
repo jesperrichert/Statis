@@ -27,30 +27,42 @@ func (c *RouterConfig) Setup() {
 		notifications := api.Group("/notifications")
 		{
 			notifications.POST("/webhooks", middleware.DefaultMiddleware, c.NotificationsController.WebhookPost)
+
+			notifications.GET("/:id", middleware.DefaultMiddleware, c.NotificationsController.GetWebhook)
 			notifications.POST("/:id", middleware.DefaultMiddleware, c.NotificationsController.UpdateWebhook)
+			notifications.DELETE("/:id", middleware.DefaultMiddleware, c.NotificationsController.DeleteWebhook)
 		}
 
 		status := api.Group("/status")
 		{
 			monitors := status.Group("/monitors")
 			{
-				monitors.GET("/", c.MonitorController.Get)
+				monitors.GET("/", c.MonitorController.Discover)
 				monitors.POST("/", middleware.DefaultMiddleware, c.MonitorController.Post)
+
+				monitors.GET("/:id", c.MonitorController.Get)
 				monitors.POST("/:id", middleware.DefaultMiddleware, c.MonitorController.Update)
+				monitors.DELETE("/:id", middleware.DefaultMiddleware, c.MonitorController.Delete)
 			}
 
 			events := status.Group("/events")
 			{
-				events.GET("/", c.EventsController.Get)
+				events.GET("/", c.EventsController.Discover)
 				events.POST("/", middleware.DefaultMiddleware, c.EventsController.Post)
+
+				events.GET("/:id", c.EventsController.Get)
 				events.POST("/:id", middleware.DefaultMiddleware, c.EventsController.Update)
+				events.DELETE("/:id", middleware.DefaultMiddleware, c.EventsController.Delete)
 			}
 
 			incidences := status.Group("/incidences")
 			{
-				incidences.GET("/:id", c.IncidencesController.Get)
 				incidences.POST("/", middleware.DefaultMiddleware, c.IncidencesController.Post)
+
+				incidences.GET("/:id/", c.IncidencesController.Get)
+				incidences.GET("/:id/raw", c.IncidencesController.RawContent)
 				incidences.POST("/:id", middleware.DefaultMiddleware, c.IncidencesController.Update)
+				incidences.DELETE("/:id", middleware.DefaultMiddleware, c.IncidencesController.Delete)
 			}
 		}
 	}

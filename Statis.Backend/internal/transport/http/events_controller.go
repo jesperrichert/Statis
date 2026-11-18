@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
-	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/util"
 )
@@ -26,34 +25,30 @@ func NewEventsController(db *gorm.DB, service *services.EventService) *EventsCon
 // GET
 func (c *EventsController) Get(ctx *gin.Context) {
 
-	var events []model.EventModel
-	c.DB.Preload("Monitors").Find(&events)
-
-	eventDtos := make([]dto.EventDto, 0)
-	for i := range events {
-		event := events[i]
-
-		var incident model.IncidentModel
-		c.DB.Where("id = ?", event.IncidentID).First(&incident)
-
-		var monitorDtos = make([]string, 0)
-		for i := range event.Monitors {
-			monitor := event.Monitors[i]
-			monitorDtos = append(monitorDtos, monitor.Identifier)
-		}
-
-		eventDtos = append(eventDtos, dto.EventDto{
-			Identifier:         event.Identifier,
-			Title:              event.Title,
-			Description:        event.Description,
-			Type:               event.Type,
-			Date:               event.Date,
-			IncidentIdentifier: incident.Identifier,
-			Monitors:           monitorDtos,
-		})
+	eventDto, ok := c.EventService.Get(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, eventDtos)
+	ctx.JSON(http.StatusOK, eventDto)
+}
+
+// Delete
+func (c *EventsController) Delete(ctx *gin.Context) {
+
+	ok := c.EventService.Delete(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+// GET
+func (c *EventsController) Discover(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, c.EventService.Discover())
 }
 
 // Post

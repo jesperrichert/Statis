@@ -12,7 +12,8 @@
 
 ## What is Statis?
 
-Third time's the charm: Statis is a simple and clean status page with a small monitoring service built in. It comes with a tidy UI and a simple yet powerful API that lets you customize the whole application.
+Third time's the charm: Statis is a simple and clean status page with a small monitoring service built in. It comes with
+a tidy UI and a simple yet powerful API that lets you customize the whole application.
 
 - Change the design
 - Remove the whole frontend
@@ -20,13 +21,13 @@ Third time's the charm: Statis is a simple and clean status page with a small mo
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **Auto configuration** | Configure everything via a JSON config (URL) |
-| **Webhooks** | Share your monitoring data with any other service |
-| **Clean UI** | View all your monitors at a glance |
-| **Incidents & maintenance** | Announce upcoming maintenance windows |
-| **And more** | Some other small features ;) |
+| Feature                     | Description                                       |
+|-----------------------------|---------------------------------------------------|
+| **Auto configuration**      | Configure everything via a JSON config (URL)      |
+| **Webhooks**                | Share your monitoring data with any other service |
+| **Clean UI**                | View all your monitors at a glance                |
+| **Incidents & maintenance** | Announce upcoming maintenance windows             |
+| **And more**                | Some other small features ;)                      |
 
 ## Installation
 
@@ -40,6 +41,8 @@ Set up what you need and let Statis do the rest.
 
 Feature requests are always welcome! Things I'd like to add:
 
-- [ ] OpenTelemetry data support for display
-- [ ] More monitor types
-- [ ] *\<your idea here\>*
+- [ ] OpenTelemetry data support for display !!
+- [ ] More monitor types !
+- [ ] Badges !!!
+- [ ] Cli :) !!
+- [ ] *\<your idea here\>* 

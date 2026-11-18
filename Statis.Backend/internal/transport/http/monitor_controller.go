@@ -27,7 +27,7 @@ func NewMonitorController(db *gorm.DB, service *services.MonitorService) *Monito
 }
 
 // GET
-func (c *MonitorController) Get(ctx *gin.Context) {
+func (c *MonitorController) Discover(ctx *gin.Context) {
 	var m []model.MonitorModel
 	c.DB.Preload("Events").Find(&m)
 
@@ -102,6 +102,16 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"monitor": body})
 }
 
+// Get
+func (c *MonitorController) Get(ctx *gin.Context) {
+	monitorDto, ok := c.MonitorService.Get(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, util.JsonResult("monitor not found", map[string]any{}))
+		return
+	}
+	ctx.JSON(http.StatusOK, monitorDto)
+}
+
 // Post
 func (c *MonitorController) Update(ctx *gin.Context) {
 
@@ -123,5 +133,15 @@ func (c *MonitorController) Update(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+// Delete
+func (c *MonitorController) Delete(ctx *gin.Context) {
+	ok := c.MonitorService.Delete(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, util.JsonResult("monitor not found", map[string]any{}))
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{})
 }

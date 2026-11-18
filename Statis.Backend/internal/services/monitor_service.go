@@ -24,6 +24,55 @@ func NewMonitorService(db *gorm.DB, scheduler *schedule.MonitorScheduler) *Monit
 	}
 }
 
+func (e *MonitorService) Get(identifier string) (dto.MonitorDto[any], bool) {
+	var monitor model.Monitor[any]
+	e.DB.Preload("Events").Where("identifier = ?", identifier).First(&monitor)
+
+	if util.CheckNull(monitor.Identifier) {
+		return dto.MonitorDto[any]{}, false
+	}
+
+	var affectedBy []dto.MonitorEffect
+	for k, v := range monitor.AffectedByExternal {
+		affectedBy = append(affectedBy, dto.MonitorEffect{
+			Name: k,
+			Link: v,
+		})
+	}
+
+	var events []string
+	for i := range monitor.Events {
+		event := monitor.Events[i]
+		events = append(events, event.Identifier)
+	}
+
+	return dto.MonitorDto[any]{
+		Identifier:   monitor.Identifier,
+		IsParent:     monitor.IsParent,
+		Group:        monitor.Group,
+		Name:         monitor.Name,
+		Description:  monitor.Description,
+		Type:         monitor.Type,
+		ScheduleTime: monitor.ScheduleTime,
+		TypeData:     monitor.TypeData,
+		State:        monitor.State,
+		Events:       events,
+		AffectedBy:   affectedBy,
+		ExternalUrl:  monitor.ExternalUrl,
+	}, true
+}
+
+func (e *MonitorService) Delete(identifier string) bool {
+	var monitor model.Monitor[any]
+	e.DB.Preload("Events").Where("identifier = ?", identifier).First(&monitor)
+	if util.CheckNull(monitor.Identifier) {
+		return false
+	}
+
+	e.DB.Delete(&monitor)
+	return true
+}
+
 func (e *MonitorService) Validate(dto *dto.MonitorDto[any]) (int, string) {
 
 	if util.CheckNull(dto.Identifier) ||

@@ -19,6 +19,71 @@ func NewEventService(db *gorm.DB) *EventService {
 	}
 }
 
+func (e *EventService) Get(identifier string) (dto.EventDto, bool) {
+	var event model.EventModel
+	e.DB.Preload("Monitors").Preload("Incident").Where("identifier = ?", identifier).First(&event)
+
+	if util.CheckNull(event.Identifier) {
+		return dto.EventDto{}, false
+	}
+
+	var monitors []string
+	for i := range event.Monitors {
+		monitors = append(monitors, event.Monitors[i].Identifier)
+	}
+
+	return dto.EventDto{
+		Identifier:         event.Identifier,
+		Title:              event.Title,
+		Description:        event.Description,
+		Type:               event.Type,
+		Date:               event.Date,
+		IncidentIdentifier: event.Incident.Identifier,
+		Monitors:           monitors,
+	}, true
+}
+
+func (e *EventService) Delete(identifier string) bool {
+	var event model.EventModel
+	e.DB.Preload("Monitors").Preload("Incident").Where("identifier = ?", identifier).First(&event)
+	if util.CheckNull(event.Identifier) {
+		return false
+	}
+	e.DB.Delete(&event)
+	return true
+}
+
+func (e *EventService) Discover() []dto.EventDto {
+	var events []model.EventModel
+	e.DB.Preload("Monitors").Find(&events)
+
+	eventDtos := make([]dto.EventDto, 0)
+	for i := range events {
+		event := events[i]
+
+		var incident model.IncidentModel
+		e.DB.Where("id = ?", event.IncidentID).First(&incident)
+
+		var monitorDtos = make([]string, 0)
+		for i := range event.Monitors {
+			monitor := event.Monitors[i]
+			monitorDtos = append(monitorDtos, monitor.Identifier)
+		}
+
+		eventDtos = append(eventDtos, dto.EventDto{
+			Identifier:         event.Identifier,
+			Title:              event.Title,
+			Description:        event.Description,
+			Type:               event.Type,
+			Date:               event.Date,
+			IncidentIdentifier: incident.Identifier,
+			Monitors:           monitorDtos,
+		})
+	}
+
+	return eventDtos
+}
+
 func (e *EventService) Validate(dto *dto.EventDto) (int, string) {
 	if util.CheckNull(dto.Identifier) ||
 		util.CheckNull(dto.Description) ||

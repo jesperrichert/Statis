@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
-	"jespersen.zip.statis/internal/model"
 	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/util"
 )
@@ -25,13 +24,24 @@ func NewIncidencesController(db *gorm.DB, service *services.IncidentService) *In
 
 // GET
 func (c *IncidencesController) Get(ctx *gin.Context) {
+	incidentDto, ok := c.IncidentService.Get(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "incidence not found"})
+		return
+	}
+	ctx.JSON(http.StatusOK, incidentDto)
+}
 
-	id := ctx.Param("id")
+// GET
+func (c *IncidencesController) RawContent(ctx *gin.Context) {
 
-	var incident model.IncidentModel
-	c.DB.Where("identifier = ?", id).First(&incident)
+	incidentDto, ok := c.IncidentService.Get(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "incidence not found"})
+		return
+	}
 
-	ctx.Data(http.StatusOK, "text/plain", []byte(incident.Content))
+	ctx.Data(http.StatusOK, "text/plain", []byte(incidentDto.Content))
 }
 
 // POST
@@ -75,6 +85,18 @@ func (c *IncidencesController) Update(ctx *gin.Context) {
 	status = c.IncidentService.Update(ctx.Param("id"), &body)
 	if status != http.StatusOK {
 		ctx.JSON(status, util.JsonResult("failed to update dto", map[string]any{}))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+// GET
+func (c *IncidencesController) Delete(ctx *gin.Context) {
+
+	ok := c.IncidentService.Delete(ctx.Param("id"))
+	if !ok {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "incidence not found"})
 		return
 	}
 

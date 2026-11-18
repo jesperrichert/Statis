@@ -24,6 +24,31 @@ func NewWebhookService(db *gorm.DB, scheduler *schedule.WebhookScheduler) *Webho
 	}
 }
 
+func (e *WebhookService) GetWebhook(identifier string) (dto.WebhookDto, bool) {
+	var webhook model.WebhookModel
+	e.DB.Where("identifier = ?", identifier).First(&webhook)
+
+	if util.CheckNull(webhook.Identifier) {
+		return dto.WebhookDto{}, false
+	}
+
+	return dto.WebhookDto{
+		Identifier:   webhook.Identifier,
+		Url:          webhook.Url,
+		JSONTemplate: webhook.JSONTemplate,
+	}, true
+}
+
+func (e *WebhookService) DeleteWebhook(identifier string) bool {
+	var webhookModel model.WebhookModel
+	e.DB.Where("identifier = ?", identifier).First(&webhookModel)
+	if util.CheckNull(webhookModel.Identifier) {
+		return false
+	}
+	e.DB.Delete(&webhookModel)
+	return true
+}
+
 func (e *WebhookService) Validate(dto *dto.WebhookDto) (int, string) {
 
 	if util.CheckNull(dto.Url) ||

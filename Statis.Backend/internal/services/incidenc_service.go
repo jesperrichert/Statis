@@ -21,6 +21,32 @@ func NewIncidentService(db *gorm.DB) *IncidentService {
 	}
 }
 
+func (e *IncidentService) Get(identifier string) (dto.IncidentDto, bool) {
+	var incidentModel model.IncidentModel
+	e.DB.Preload("Event").Where("identifier = ?", identifier).First(&incidentModel)
+
+	if util.CheckNull(incidentModel.Identifier) {
+		return dto.IncidentDto{}, false
+	}
+
+	return dto.IncidentDto{
+		Identifier:      incidentModel.Identifier,
+		EventIdentifier: incidentModel.Event.Identifier,
+		Content:         incidentModel.Content,
+	}, true
+}
+
+func (e *IncidentService) Delete(identifier string) bool {
+	var incidentModel model.IncidentModel
+	e.DB.Preload("Event").Where("identifier = ?", identifier).First(&incidentModel)
+	if util.CheckNull(incidentModel.Identifier) {
+		return false
+	}
+
+	e.DB.Delete(&incidentModel)
+	return true
+}
+
 func (e *IncidentService) Validate(dto *dto.IncidentDto) (int, string) {
 
 	if util.CheckNull(dto.Identifier) ||
