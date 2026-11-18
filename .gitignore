@@ -49,3 +49,4 @@ next-env.d.ts
 /Statis.Backend/*.sqlite
 /storage
 storage/db.sqlite
+Statis.Frontend/bun.lock
