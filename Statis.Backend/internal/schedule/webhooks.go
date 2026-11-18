@@ -33,7 +33,7 @@ func NewWebhookScheduler(db *gorm.DB) *WebhookScheduler {
 	}
 }
 
-func (s *WebhookScheduler) Setup() {
+func (s *WebhookScheduler) Setup() *WebhookScheduler {
 	var webhooks []model.WebhookModel
 	s.DB.Find(&webhooks)
 	for i := range webhooks {
@@ -42,6 +42,8 @@ func (s *WebhookScheduler) Setup() {
 
 	println("[WEBHOOK CRON] Started!")
 	s.Scheduler.Start()
+
+	return s
 }
 
 func (s *WebhookScheduler) ScheduleWebhook(webhook *model.WebhookModel) {
@@ -67,6 +69,12 @@ func (s *WebhookScheduler) Key(webhook *model.WebhookModel, monitor *model.Monit
 
 func (s *WebhookScheduler) newJob(webhook *model.WebhookModel, monitor *model.Monitor[any]) {
 	key := s.Key(webhook, monitor)
+
+	if s.Jobs[key].Job != nil {
+		s.Scheduler.RemoveJob(s.Jobs[key].Job.ID())
+		s.Jobs[key] = WebhookJob{}
+	}
+
 	j, _ := s.Scheduler.NewJob(
 		gocron.DurationJob(
 			1*time.Second,

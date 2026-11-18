@@ -28,7 +28,7 @@ func NewMonitorScheduler(db *gorm.DB, monitorManager *manager.MonitorManager) *M
 	}
 }
 
-func (s *MonitorScheduler) Setup() {
+func (s *MonitorScheduler) Setup() *MonitorScheduler {
 	var m []model.MonitorModel
 	s.DB.Find(&m)
 	for i := range m {
@@ -38,9 +38,12 @@ func (s *MonitorScheduler) Setup() {
 
 	println("[MONITOR CRON] Started!")
 	s.Scheduler.Start()
+
+	return s
 }
 
 func (s *MonitorScheduler) ScheduleMonitor(monitor *model.Monitor[any]) {
+
 	s.newJob(monitor)
 }
 
@@ -50,6 +53,12 @@ func (s *MonitorScheduler) Key(monitor *model.Monitor[any]) string {
 
 func (s *MonitorScheduler) newJob(m *model.Monitor[any]) {
 	monitor := m
+
+	if s.Jobs[s.Key(m)] != nil {
+		s.Scheduler.RemoveJob(s.Jobs[s.Key(m)].ID())
+		s.Jobs[s.Key(m)] = nil
+	}
+
 	if monitors.ToType(monitor.Type) == monitors.Group ||
 		monitors.ToType(monitor.Type) == monitors.Unkown {
 		return

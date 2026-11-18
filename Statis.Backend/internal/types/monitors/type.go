@@ -47,7 +47,7 @@ func (mt MonitorType) ToString() string {
 	return monitorTypeName[mt]
 }
 
-func (mt MonitorType) IsTypeDtoValid(monitor dto.MonitorDto[any]) bool {
+func (mt MonitorType) IsTypeDtoValid(monitor *dto.MonitorDto[any]) bool {
 	var bytes []byte
 	bytes, _ = json.Marshal(monitor)
 	switch mt {

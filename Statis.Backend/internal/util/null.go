@@ -11,6 +11,14 @@ func CheckNull(data any) bool {
 		}
 		return false
 	}
+
+	num, ok := data.(int)
+	if ok {
+		if num == 0 {
+			return true
+		}
+		return false
+	}
 	return false
 }
 

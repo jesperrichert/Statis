@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
-	"jespersen.zip.statis/internal/schedule"
 	"jespersen.zip.statis/internal/services"
 	"jespersen.zip.statis/internal/types/events"
 	"jespersen.zip.statis/internal/types/monitors"
@@ -16,16 +15,14 @@ import (
 )
 
 type MonitorController struct {
-	DB               *gorm.DB
-	MonitorScheduler *schedule.MonitorScheduler
-	MonitorService   *services.MonitorService
+	DB             *gorm.DB
+	MonitorService *services.MonitorService
 }
 
-func NewMonitorController(db *gorm.DB, scheduler *schedule.MonitorScheduler, service *services.MonitorService) *MonitorController {
+func NewMonitorController(db *gorm.DB, service *services.MonitorService) *MonitorController {
 	return &MonitorController{
-		DB:               db,
-		MonitorScheduler: scheduler,
-		MonitorService:   service,
+		DB:             db,
+		MonitorService: service,
 	}
 }
 
@@ -90,61 +87,24 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if util.CheckNull(body.Identifier) ||
-		util.CheckNull(body.IsParent) ||
-		util.CheckNull(body.Name) ||
-		util.CheckNull(body.ScheduleTime) ||
-		util.CheckNull(body.Type) ||
-		util.CheckNull(body.TypeData) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid"})
+
+	status, message := c.MonitorService.Validate(&body)
+	if status != http.StatusOK {
+		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
 		return
 	}
-
-	if !monitors.ToType(body.Type).IsTypeDtoValid(body) ||
-		body.TypeData == nil ||
-		util.IsEmpty(body.TypeData) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid monitor type"})
+	status = c.MonitorService.Add(&body)
+	if status != http.StatusCreated {
+		ctx.JSON(status, util.JsonResult("failed to create", map[string]any{}))
 		return
 	}
-
-	var monitorModel model.MonitorModel
-	c.DB.Where(&model.MonitorModel{}).Where("identifier = ?", body.Identifier).First(&monitorModel)
-	if len(monitorModel.Identifier) > 0 {
-		ctx.JSON(http.StatusConflict, gin.H{"error": "Monitor already exists!"})
-		return
-	}
-	var effects = map[string]string{}
-	for i := range body.AffectedBy {
-		effects[body.AffectedBy[i].Name] = body.AffectedBy[i].Link
-	}
-
-	c.DB.Create(&model.MonitorModel{
-		Identifier:         body.Identifier,
-		IsParent:           body.IsParent,
-		Group:              body.Group,
-		Name:               body.Name,
-		Description:        body.Description,
-		Type:               strings.ToUpper(body.Type),
-		ExternalUrl:        body.ExternalUrl,
-		TypeData:           body.TypeData,
-		State:              body.State,
-		AffectedByExternal: effects,
-	})
-	monitor := model.Monitor[any](monitorModel)
-	c.MonitorScheduler.ScheduleMonitor(&monitor)
 
 	ctx.JSON(http.StatusOK, gin.H{"monitor": body})
 }
 
 // Post
 func (c *MonitorController) Update(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var monitorModel model.MonitorModel
-	c.DB.Where("identifier = ?", id).First(&monitorModel)
-	if util.CheckNull(monitorModel.Identifier) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "monitor not found"})
-		return
-	}
+
 	var body dto.MonitorDto[any]
 	err := ctx.BindJSON(&body)
 	if err != nil {
@@ -152,47 +112,16 @@ func (c *MonitorController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if !util.CheckNull(body.Type) && util.CheckNull(body.TypeData) {
-		if monitors.ToType(body.Type).IsTypeDtoValid(body) ||
-			body.TypeData != nil ||
-			!util.IsEmpty(body.TypeData) {
-			monitorModel.Type = strings.ToUpper(body.Type)
-			monitorModel.TypeData = body.TypeData
-		}
+	status, message := c.MonitorService.Validate(&body)
+	if status != http.StatusOK {
+		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
+		return
 	}
-	if !util.CheckNull(body.Name) {
-		monitorModel.Name = body.Name
-	}
-	if !util.CheckNull(body.Description) {
-		monitorModel.Description = body.Description
-	}
-	if !util.CheckNull(body.AffectedBy) {
-		effects := map[string]string{}
-		for i := range body.AffectedBy {
-			effect := body.AffectedBy[i]
-			effects[effect.Name] = effect.Link
-		}
-		monitorModel.AffectedByExternal = effects
-	}
-	if !util.CheckNull(body.ScheduleTime) {
-		monitorModel.ScheduleTime = body.ScheduleTime
-	}
-	if !util.CheckNull(body.ExternalUrl) {
-		monitorModel.ExternalUrl = body.ExternalUrl
-	}
-	if !util.CheckNull(body.IsParent) {
-		monitorModel.IsParent = body.IsParent
-	}
-	if !util.CheckNull(body.Group) {
-		monitorModel.Group = body.Group
+	status = c.MonitorService.Update(ctx.Param("id"), &body)
+	if status != http.StatusCreated {
+		ctx.JSON(status, util.JsonResult("failed to update", map[string]any{}))
+		return
 	}
 
-	key := string(rune(monitorModel.ID)) + monitorModel.Identifier
-	if c.MonitorScheduler.Jobs[key] != nil {
-		_ = c.MonitorScheduler.Scheduler.RemoveJob(c.MonitorScheduler.Jobs[key].ID())
-	}
-	monitor := model.Monitor[any](monitorModel)
-	c.MonitorScheduler.ScheduleMonitor(&monitor)
-
-	c.DB.Where("id = ?", monitorModel.ID).Updates(&monitorModel)
+	ctx.JSON(http.StatusOK, gin.H{})
 }

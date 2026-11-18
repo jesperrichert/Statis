@@ -53,7 +53,7 @@ func (e *IncidentService) Validate(dto *dto.IncidentDto) (int, string) {
 		dto.Content = string(bytes)
 	}
 
-	return http.StatusOK, "CREATED"
+	return http.StatusOK, ""
 }
 
 func (e *IncidentService) Add(dto *dto.IncidentDto) int {

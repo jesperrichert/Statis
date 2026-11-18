@@ -27,24 +27,21 @@ func Build(config *StatisConfig) {
 	})
 
 	// Scheduler
-	monitorScheduler := schedule.NewMonitorScheduler(config.DB, monitorManager)
-	monitorScheduler.Setup()
-	webhookScheduler := schedule.NewWebhookScheduler(config.DB)
-	webhookScheduler.Setup()
-	autoConfigureScheduler := schedule.NewAutoConfigureScheduler(config.DB)
-	autoConfigureScheduler.Setup()
+	monitorScheduler := schedule.NewMonitorScheduler(config.DB, monitorManager).Setup()
+	webhookScheduler := schedule.NewWebhookScheduler(config.DB).Setup()
+	schedule.NewAutoConfigureScheduler(config.DB).Setup()
 
 	// Service
-	webhookService := services.NewWebhookService(config.DB)
+	webhookService := services.NewWebhookService(config.DB, webhookScheduler)
 	incidentService := services.NewIncidentService(config.DB)
-	monitorService := services.NewMonitorService(config.DB)
+	monitorService := services.NewMonitorService(config.DB, monitorScheduler)
 	eventService := services.NewEventService(config.DB)
 
 	// Register Controller
-	monitorController := http.NewMonitorController(config.DB, monitorScheduler, monitorService)
+	monitorController := http.NewMonitorController(config.DB, monitorService)
 	eventsController := http.NewEventsController(config.DB, eventService)
 	incidencesController := http.NewIncidencesController(config.DB, incidentService)
-	notificationsController := http.NewNotificationsController(config.DB, webhookScheduler, webhookService)
+	notificationsController := http.NewNotificationsController(config.DB, webhookService)
 
 	routerConfig := router.RouterConfig{
 		App:                     config.Api,

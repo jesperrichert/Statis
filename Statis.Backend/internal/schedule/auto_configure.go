@@ -30,7 +30,7 @@ func NewAutoConfigureScheduler(db *gorm.DB) *AutoConfigureScheduler {
 	}
 }
 
-func (s *AutoConfigureScheduler) Setup() {
+func (s *AutoConfigureScheduler) Setup() *AutoConfigureScheduler {
 
 	monitors, mOk := os.LookupEnv("MONITORS")
 	if mOk {
@@ -51,6 +51,8 @@ func (s *AutoConfigureScheduler) Setup() {
 
 	println("[AUTO_CONFIG CRON] Started!")
 	s.Scheduler.Start()
+
+	return s
 }
 
 func (s *AutoConfigureScheduler) newJob(jsonUrl string, jobType string) {
