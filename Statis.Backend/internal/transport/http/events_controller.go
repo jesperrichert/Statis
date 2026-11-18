@@ -64,52 +64,23 @@ func (c *EventsController) Post(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if util.CheckNull(body.Identifier) ||
-		util.CheckNull(body.Description) ||
-		util.CheckNull(body.Date) ||
-		util.CheckNull(body.Title) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "dto not valid"})
+	status, message := c.EventService.Validate(&body)
+	if status != http.StatusOK {
+		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
 		return
 	}
 
-	var event model.EventModel
-	c.DB.Where("identifier = ?", body.Identifier).First(&event)
-	if len(event.Identifier) > 0 {
-		ctx.JSON(http.StatusConflict, gin.H{"error": "event already exists"})
+	status = c.EventService.Add(&body)
+	if status != http.StatusCreated {
+		ctx.JSON(status, util.JsonResult("failed to add event", map[string]any{}))
 		return
 	}
 
-	var monitors []*model.MonitorModel
-	for i := range body.Monitors {
-		id := body.Monitors[i]
-		var monitor model.MonitorModel
-		c.DB.Where("identifier = ?", id).First(&monitor)
-		monitors = append(monitors, &monitor)
-	}
-
-	c.DB.Create(&model.EventModel{
-		Identifier:  body.Identifier,
-		Title:       body.Title,
-		Description: body.Description,
-		Type:        body.Type,
-		Date:        body.Date,
-		Monitors:    monitors,
-	})
-
-	ctx.JSON(http.StatusCreated, gin.H{})
+	ctx.JSON(http.StatusOK, gin.H{})
 }
 
 // Post
 func (c *EventsController) Update(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var event model.EventModel
-	c.DB.Where("identifier = ?", id).First(&event)
-	if util.CheckNull(event.Identifier) {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "event not found"})
-		return
-	}
-
 	var body dto.EventDto
 	err := ctx.BindJSON(&body)
 	if err != nil {
@@ -117,31 +88,11 @@ func (c *EventsController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if !util.CheckNull(body.Type) {
-		event.Type = body.Type
+	status := c.EventService.Update(ctx.Param("id"), &body)
+	if status != http.StatusOK {
+		ctx.JSON(status, gin.H{"error": "failed to update monitor!"})
+		return
 	}
-	if !util.CheckNull(body.Title) {
-		event.Title = body.Title
-	}
-	if !util.CheckNull(body.Description) {
-		event.Description = body.Description
-	}
-	if !util.CheckNull(body.Date) {
-		event.Date = body.Date
-	}
-	if len(body.Monitors) > 0 {
 
-		var monitors []*model.MonitorModel
-		for i := range body.Monitors {
-			id := body.Monitors[i]
-			var monitor model.MonitorModel
-			c.DB.Where("identifier = ?", id).First(&monitor)
-			if !util.CheckNull(monitor.Identifier) {
-				monitors = append(monitors, &monitor)
-			}
-		}
-		event.Monitors = monitors
-	}
-	// TODO: Fix "Old Incidences remove"
-	c.DB.Where("id = ?", event.ID).Updates(&event)
+	ctx.JSON(http.StatusOK, gin.H{})
 }
