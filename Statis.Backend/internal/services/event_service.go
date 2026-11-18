@@ -37,7 +37,6 @@ func (e *EventService) Validate(dto *dto.EventDto) (int, string) {
 	return http.StatusOK, ""
 }
 
-// Success: http.StatusCreated
 func (e *EventService) Add(dto *dto.EventDto) int {
 
 	var monitors []*model.MonitorModel

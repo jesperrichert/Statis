@@ -146,32 +146,29 @@ func (s *AutoConfigureScheduler) autoConfigure[DTO any](
 		data := dtos[i]
 
 		status, message := validateFunc(&data)
-		if status != http.StatusOK {
-			fmt.Println(message)
-			return
-		}
-
-		status = addFunc(&data)
 		switch status {
 		case http.StatusConflict:
-			refData := reflect.TypeOf(data)
-			identifier, ok := refData.FieldByName("Identifier")
-			if !ok {
-				fmt.Println("Failed to get Identifier from dto.")
+			refData := reflect.ValueOf(data)
+			identifier := refData.FieldByName("Identifier").String()
+
+			status = updateFunc(identifier, &data)
+			if status == http.StatusNotFound {
+				fmt.Println("[AUTO CONFIG] No data found for ")
 				return
 			}
 
-			status = updateFunc(identifier.Name, &data)
 			if status == http.StatusOK {
 				fmt.Println("[AUTO CONFIG] Successfully Updated Auto Configure", configUrl)
 			} else {
 				fmt.Println("[AUTO CONFIG] Auto Configure Update failed with status", status, " | URL:", configUrl)
 			}
+			break
 		case http.StatusOK:
-			fmt.Println("[AUTO CONFIG] Successfully Configured", configUrl)
-		default:
-			fmt.Println("[AUTO CONFIG] Failed to Configure: ", configUrl)
+			status = addFunc(&data)
+			break
+		case http.StatusBadRequest:
+			fmt.Println(message)
+			break
 		}
-
 	}
 }
