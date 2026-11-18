@@ -1,0 +1,54 @@
+# "type": RESOLVED | UPDATE | INVESTIGATING | IDENTIFIED
+
+### POST Add an Event
+POST http://localhost:4000/api/status/events
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy",
+  "title": "testy",
+  "description": "testy",
+  "type": "INVESTIGATING",
+  "date": "2026-11-18T22:00:00Z",
+  "incident_identifier": "testy",
+  "monitors": [
+    "testy"
+  ]
+}
+
+### GET Get all Events
+GET http://localhost:4000/api/status/events
+Content-Type: application/json
+Accept: application/json
+
+
+### GET Get an Event
+GET http://localhost:4000/api/status/events/testy
+Content-Type: application/json
+Accept: application/json
+
+### POST Update an Event
+POST http://localhost:4000/api/status/events/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy",
+  "title": "testy",
+  "description": "testy",
+  "type": "UPDATE",
+  "date": "2026-11-18T22:00:00Z",
+  "incident_identifier": "testy",
+  "monitors": [
+    "testy"
+  ]
+}
+
+### DELETE an Event
+DELETE http://localhost:4000/api/status/events/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json

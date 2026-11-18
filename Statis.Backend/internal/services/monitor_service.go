@@ -25,12 +25,13 @@ func NewMonitorService(db *gorm.DB, scheduler *schedule.MonitorScheduler) *Monit
 }
 
 func (e *MonitorService) Get(identifier string) (dto.MonitorDto[any], bool) {
-	var monitor model.Monitor[any]
-	e.DB.Preload("Events").Where("identifier = ?", identifier).First(&monitor)
-
+	var monitor model.MonitorModel
+	e.DB.Where("identifier = ?", identifier).First(&monitor)
 	if util.CheckNull(monitor.Identifier) {
 		return dto.MonitorDto[any]{}, false
 	}
+
+	e.DB.Preload("Events").Where("identifier = ?", identifier).First(&monitor)
 
 	var affectedBy []dto.MonitorEffect
 	for k, v := range monitor.AffectedByExternal {
@@ -63,7 +64,7 @@ func (e *MonitorService) Get(identifier string) (dto.MonitorDto[any], bool) {
 }
 
 func (e *MonitorService) Delete(identifier string) bool {
-	var monitor model.Monitor[any]
+	var monitor model.MonitorModel
 	e.DB.Preload("Events").Where("identifier = ?", identifier).First(&monitor)
 	if util.CheckNull(monitor.Identifier) {
 		return false
@@ -92,8 +93,8 @@ func (e *MonitorService) Validate(dto *dto.MonitorDto[any]) (int, string) {
 
 	var monitorModel model.MonitorModel
 	e.DB.Where(&model.MonitorModel{}).Where("identifier = ?", dto.Identifier).First(&monitorModel)
-	if len(monitorModel.Identifier) > 0 {
-		return http.StatusConflict, "Monitor already exists!"
+	if !util.CheckNull(monitorModel.Identifier) {
+		return http.StatusConflict, "monitor already exists!"
 	}
 
 	return http.StatusOK, ""
@@ -112,10 +113,11 @@ func (e *MonitorService) Add(dto *dto.MonitorDto[any]) int {
 		Group:              dto.Group,
 		Name:               dto.Name,
 		Description:        dto.Description,
+		ScheduleTime:       dto.ScheduleTime,
 		Type:               strings.ToUpper(dto.Type),
 		ExternalUrl:        dto.ExternalUrl,
 		TypeData:           dto.TypeData,
-		State:              dto.State,
+		State:              monitors.Offline.ToString(),
 		AffectedByExternal: effects,
 	}).Where("identifier = ?", dto.Identifier).First(&monitorModel)
 

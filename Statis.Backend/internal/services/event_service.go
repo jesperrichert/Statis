@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
 	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/types/events"
 	"jespersen.zip.statis/internal/util"
 )
 
@@ -88,14 +89,15 @@ func (e *EventService) Validate(dto *dto.EventDto) (int, string) {
 	if util.CheckNull(dto.Identifier) ||
 		util.CheckNull(dto.Description) ||
 		util.CheckNull(dto.Date) ||
-		util.CheckNull(dto.Title) {
-
+		util.CheckNull(dto.Title) ||
+		util.CheckNull(dto.Type) ||
+		events.ToType(dto.Type) == events.Unkown {
 		return http.StatusBadRequest, "invalid dto!"
 	}
 
 	var event model.EventModel
 	e.DB.Where("identifier = ?", dto.Identifier).First(&event)
-	if len(event.Identifier) > 0 {
+	if !util.CheckNull(event.Identifier) {
 		return http.StatusConflict, "event already exists"
 	}
 

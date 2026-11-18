@@ -51,8 +51,8 @@ func (e *WebhookService) DeleteWebhook(identifier string) bool {
 
 func (e *WebhookService) Validate(dto *dto.WebhookDto) (int, string) {
 
-	if util.CheckNull(dto.Url) ||
-		util.CheckNull(dto.Identifier) ||
+	if util.CheckNull(dto.Identifier) ||
+		util.CheckNull(dto.Url) ||
 		util.CheckNull(dto.JSONTemplate) {
 		return http.StatusBadRequest, "dto not valid"
 	}
@@ -71,8 +71,8 @@ func (e *WebhookService) Validate(dto *dto.WebhookDto) (int, string) {
 
 	var webhook model.WebhookModel
 	e.DB.Where("identifier = ?", dto.Identifier).First(&webhook)
-	if len(webhook.Identifier) > 0 {
-		return http.StatusConflict, "this webhook already exists."
+	if !util.CheckNull(webhook.Identifier) {
+		return http.StatusConflict, "webhook already exists."
 	}
 
 	return http.StatusOK, ""

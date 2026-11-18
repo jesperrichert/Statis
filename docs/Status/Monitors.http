@@ -1,0 +1,89 @@
+# "type": HTTP | TCP | PING | GROUP
+# HTTP: {
+#  "method": "testy",
+#  "url": "testy",
+#  "body": "testy",
+#  "status": 200
+# }
+# TCP:
+# {
+#  "host": "testy",
+#  "port": 80
+# }
+# Ping:
+# {
+#  "host": "testy"
+# }
+
+### POST Add a Monitor
+POST http://localhost:4000/api/status/monitors
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy",
+  "is_parent": false,
+  "group": "testy",
+  "name": "testy",
+  "description": "testy",
+  "type": "HTTP",
+  "schedule_time": 60,
+  "type_data": {
+    "method": "GET",
+    "url": "https://example.com/test",
+    "body": "",
+    "status": 200
+  },
+  "affected_by": [
+    {
+      "name": "testy",
+      "link": "https://example.com"
+    }
+  ],
+  "external_url": "https://example.com"
+}
+
+
+### GET Get all Monitors
+GET http://localhost:4000/api/status/monitors
+Content-Type: application/json
+Accept: application/json
+
+
+### GET Get a Monitor
+GET http://localhost:4000/api/status/monitors/testy
+Content-Type: application/json
+Accept: application/json
+
+
+### POST Update a Monitor
+POST http://localhost:4000/api/status/monitors/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy",
+  "is_parent": false,
+  "group": "",
+  "name": "testy",
+  "description": "testy",
+  "type": "HTTP",
+  "schedule_time": 60,
+  "type_data": {
+    "method": "GET",
+    "url": "https://example.com/test",
+    "body": "",
+    "status": 200
+  },
+  "affected_by": [],
+  "external_url": "testy"
+}
+
+
+### DELETE a Monitor
+DELETE http://localhost:4000/api/status/monitors/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json

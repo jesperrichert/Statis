@@ -181,7 +181,7 @@ export default function IncidencePage() {
 
         (async () => {
             try {
-                const res = await fetch(`/api/status/incidences/${slug}`);
+                const res = await fetch(`/api/status/incidences/${slug}/raw`);
                 const {meta, body} = parseFrontmatter(await res.text());
                 setMetadata(meta);
                 setMdContent(body);

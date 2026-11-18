@@ -118,19 +118,24 @@ func (e *IncidentService) Update(identifier string, dto *dto.IncidentDto) int {
 		var event model.EventModel
 		e.DB.Where("identifier = ?", dto.EventIdentifier).First(&event)
 		if !util.CheckNull(event.Identifier) {
+			oldEvent.IncidentID = 0
+			oldEvent.Incident = model.IncidentModel{ID: 0}
+			e.DB.Save(&oldEvent)
 
 			incident.EventID = event.ID
 			event.IncidentID = incident.ID
 			e.DB.Where("id = ?", event.ID).Updates(&event)
-
-			oldEvent.IncidentID = 0
-			e.DB.Updates(&oldEvent)
 		}
 	} else {
 		var oldEvent model.EventModel
 		e.DB.Where("id = ?", incident.EventID).First(&oldEvent)
 		oldEvent.IncidentID = 0
-		e.DB.Updates(&oldEvent)
+		oldEvent.Incident = model.IncidentModel{ID: 0}
+		e.DB.Save(&oldEvent)
+	}
+
+	if !util.CheckNull(dto.Content) {
+		incident.Content = dto.Content
 	}
 
 	e.DB.Where("id = ?", incident.ID).Updates(&incident)

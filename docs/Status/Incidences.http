@@ -1,0 +1,41 @@
+### POST Add an Incidence
+POST http://localhost:4000/api/status/incidences
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy2",
+  "event_identifier": "sdfsdf",
+  "content": "testy"
+}
+
+
+### GET Get an Incidence
+GET http://localhost:4000/api/status/incidences/testy2
+Content-Type: application/json
+Accept: application/json
+
+
+### GET Get an Incidence (raw)
+GET http://localhost:4000/api/status/incidences/testy2/raw
+Accept: text/plain
+
+
+### POST Update an Incidence
+POST http://localhost:4000/api/status/incidences/testy2
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy2",
+  "event_identifier": "testy",
+  "content": "testy2"
+}
+
+### DELETE an Incidence
+DELETE http://localhost:4000/api/status/incidences/testy2
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json

@@ -46,7 +46,7 @@ func (c *NotificationsController) WebhookPost(ctx *gin.Context) {
 	}
 
 	status, message := c.WebhookService.Validate(&body)
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusConflict {
 		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
 		return
 	}

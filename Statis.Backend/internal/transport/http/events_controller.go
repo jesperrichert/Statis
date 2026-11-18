@@ -84,7 +84,7 @@ func (c *EventsController) Update(ctx *gin.Context) {
 	}
 
 	status, message := c.EventService.Validate(&body)
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusConflict {
 		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
 		return
 	}

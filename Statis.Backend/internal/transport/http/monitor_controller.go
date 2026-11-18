@@ -94,12 +94,12 @@ func (c *MonitorController) Post(ctx *gin.Context) {
 		return
 	}
 	status = c.MonitorService.Add(&body)
-	if status != http.StatusCreated {
+	if status != http.StatusOK {
 		ctx.JSON(status, util.JsonResult("failed to create", map[string]any{}))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"monitor": body})
+	ctx.JSON(http.StatusOK, gin.H{})
 }
 
 // Get
@@ -123,7 +123,7 @@ func (c *MonitorController) Update(ctx *gin.Context) {
 	}
 
 	status, message := c.MonitorService.Validate(&body)
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusConflict {
 		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
 		return
 	}

@@ -1,0 +1,34 @@
+### POST Add a Webhook for Notifications
+POST http://localhost:4000/api/notifications/webhooks
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "testy",
+  "url": "https://discord.com/api/webhooks/sdgjkjdbnfjjhn",
+  "json_template": "{}"
+}
+
+### DELETE a Webhook
+DELETE http://localhost:4000/api/notifications/webhooks/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+### GET Get a Webhook
+GET http://localhost:4000/api/notifications/webhooks/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+### POST Update a Webhook
+POST http://localhost:4000/api/notifications/webhooks/testy
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "url": "https://discord.com/api/webhooks/sdgjkjdbnfjjhn",
+  "json_template": "{}"
+}

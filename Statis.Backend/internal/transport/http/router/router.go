@@ -28,9 +28,9 @@ func (c *RouterConfig) Setup() {
 		{
 			notifications.POST("/webhooks", middleware.DefaultMiddleware, c.NotificationsController.WebhookPost)
 
-			notifications.GET("/:id", middleware.DefaultMiddleware, c.NotificationsController.GetWebhook)
-			notifications.POST("/:id", middleware.DefaultMiddleware, c.NotificationsController.UpdateWebhook)
-			notifications.DELETE("/:id", middleware.DefaultMiddleware, c.NotificationsController.DeleteWebhook)
+			notifications.GET("/webhooks/:id", middleware.DefaultMiddleware, c.NotificationsController.GetWebhook)
+			notifications.POST("/webhooks/:id", middleware.DefaultMiddleware, c.NotificationsController.UpdateWebhook)
+			notifications.DELETE("/webhooks/:id", middleware.DefaultMiddleware, c.NotificationsController.DeleteWebhook)
 		}
 
 		status := api.Group("/status")
