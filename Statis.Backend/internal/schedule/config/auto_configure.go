@@ -153,13 +153,11 @@ func (s *AutoConfigureScheduler) autoConfigure[DTO any](
 
 			status = updateFunc(identifier, &data)
 			if status == http.StatusNotFound {
-				fmt.Println("[AUTO CONFIG] No data found for ")
+				fmt.Println("[AUTO CONFIG] No data found for ", configUrl)
 				return
 			}
 
-			if status == http.StatusOK {
-				fmt.Println("[AUTO CONFIG] Successfully Updated Auto Configure", configUrl)
-			} else {
+			if status != http.StatusOK {
 				fmt.Println("[AUTO CONFIG] Auto Configure Update failed with status", status, " | URL:", configUrl)
 			}
 			break
