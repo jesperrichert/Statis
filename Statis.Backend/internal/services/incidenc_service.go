@@ -1,8 +1,14 @@
 package services
 
 import (
+	"io"
+	"net/http"
+	"strings"
+
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/dto"
+	"jespersen.zip.statis/internal/model"
+	"jespersen.zip.statis/internal/util"
 )
 
 type IncidentService struct {
@@ -15,13 +21,92 @@ func NewIncidentService(db *gorm.DB) *IncidentService {
 	}
 }
 
-func (e *IncidentService) Validate(dto *dto.IncidentDto) bool {
+func (e *IncidentService) Validate(dto *dto.IncidentDto) (int, string) {
 
-	return false
+	if util.CheckNull(dto.Identifier) ||
+		util.CheckNull(dto.EventIdentifier) ||
+		util.CheckNull(dto.Content) {
+		return http.StatusBadRequest, "invalid dto"
+	}
+
+	var incident model.IncidentModel
+	e.DB.Where("identifier = ?", dto.Identifier).First(&incident)
+	if !util.CheckNull(incident.Identifier) {
+		return http.StatusConflict, "incident already exists!"
+	}
+
+	var event model.EventModel
+	e.DB.Where("identifier = ?", dto.EventIdentifier).First(&event)
+	if util.CheckNull(event.Identifier) {
+		return http.StatusNoContent, "no event found"
+	}
+
+	if strings.HasPrefix(dto.Content, "http") &&
+		strings.HasSuffix(dto.Content, ".mdx") {
+		req, err := http.Get(dto.Content)
+		if err != nil {
+			return http.StatusBadRequest, "faild to fetch content"
+		}
+		defer req.Body.Close()
+		bytes, _ := io.ReadAll(req.Body)
+
+		dto.Content = string(bytes)
+	}
+
+	return http.StatusOK, "CREATED"
 }
 
-func (e *IncidentService) Add(dto *dto.IncidentDto) {
+func (e *IncidentService) Add(dto *dto.IncidentDto) int {
+
+	var event model.EventModel
+	e.DB.Where("identifier = ?", dto.EventIdentifier).First(&event)
+
+	var incident model.IncidentModel
+	e.DB.Create(&model.IncidentModel{
+		Identifier: dto.Identifier,
+		Content:    dto.Content,
+		EventID:    event.ID,
+	}).Where("identifier = ?", dto.Identifier).First(&incident)
+
+	if util.CheckNull(event.Identifier) {
+		return http.StatusNotFound
+	}
+
+	event.IncidentID = incident.ID
+	e.DB.Where("id = ?", event.ID).Updates(&event)
+
+	return http.StatusCreated
 }
 
-func (e *IncidentService) Update(dto *dto.IncidentDto) {
+func (e *IncidentService) Update(identifier string, dto *dto.IncidentDto) int {
+	var incident model.IncidentModel
+	e.DB.Where("identifier = ?", identifier).First(&incident)
+	if util.CheckNull(incident.Identifier) {
+		return http.StatusNotFound
+	}
+
+	if !util.CheckNull(dto.EventIdentifier) {
+		var oldEvent model.EventModel
+		e.DB.Where("id = ?", incident.EventID).First(&oldEvent)
+
+		var event model.EventModel
+		e.DB.Where("identifier = ?", dto.EventIdentifier).First(&event)
+		if !util.CheckNull(event.Identifier) {
+
+			incident.EventID = event.ID
+			event.IncidentID = incident.ID
+			e.DB.Where("id = ?", event.ID).Updates(&event)
+
+			oldEvent.IncidentID = 0
+			e.DB.Updates(&oldEvent)
+		}
+	} else {
+		var oldEvent model.EventModel
+		e.DB.Where("id = ?", incident.EventID).First(&oldEvent)
+		oldEvent.IncidentID = 0
+		e.DB.Updates(&oldEvent)
+	}
+
+	e.DB.Where("id = ?", incident.ID).Updates(&incident)
+	return http.StatusOK
 }

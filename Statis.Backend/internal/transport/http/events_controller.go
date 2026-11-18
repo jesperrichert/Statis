@@ -61,7 +61,7 @@ func (c *EventsController) Post(ctx *gin.Context) {
 	var body dto.EventDto
 	err := ctx.BindJSON(&body)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, util.JsonResult("failed to parse dto", map[string]any{}))
 		return
 	}
 	status, message := c.EventService.Validate(&body)
@@ -88,9 +88,15 @@ func (c *EventsController) Update(ctx *gin.Context) {
 		return
 	}
 
-	status := c.EventService.Update(ctx.Param("id"), &body)
+	status, message := c.EventService.Validate(&body)
 	if status != http.StatusOK {
-		ctx.JSON(status, gin.H{"error": "failed to update monitor!"})
+		ctx.JSON(status, util.JsonResult(message, map[string]any{}))
+		return
+	}
+
+	status = c.EventService.Update(ctx.Param("id"), &body)
+	if status != http.StatusOK {
+		ctx.JSON(status, util.JsonResult("failed to update monitor!", map[string]any{}))
 		return
 	}
 
