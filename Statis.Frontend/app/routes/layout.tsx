@@ -5,10 +5,11 @@ import {Calendars, House} from "lucide-react";
 
 export default function RootLayout() {
     return (
-        <>
+        <div>
             <header className="border-b border-zinc-700">
-                <div className="flex items-center justify-between">
-                    <nav className="flex my-5 gap-8 text-sm items-center justify-center font-medium text-zinc-300">
+                <div className="flex ml-2 items-center justify-between">
+                    <nav
+                        className="flex flex-row my-5 gap-8 text-sm items-center justify-center font-medium text-zinc-300">
                         <div>
                             <img src="/statis.svg" alt="Statis" width={50} height={50}/>
                         </div>
@@ -32,9 +33,7 @@ export default function RootLayout() {
                 </div>
             </header>
 
-            <main>
-                <Outlet/>
-            </main>
-        </>
+            <Outlet/>
+        </div>
     );
 }

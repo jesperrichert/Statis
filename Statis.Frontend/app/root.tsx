@@ -29,7 +29,7 @@ export function Layout({children}: { children: React.ReactNode }) {
             <Links/>
         </head>
         <body
-            className="w-screen h-screen flex flex-col bg-linear-to-b from-zinc-950 to-zinc-900 text-zinc-100 transition-colors duration-300">
+            className="flex flex-col bg-linear-to-b from-zinc-950 to-zinc-900 text-zinc-100 transition-colors duration-300">
         {children}
         <ScrollRestoration/>
         <Scripts/>

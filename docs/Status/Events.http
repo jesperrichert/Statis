@@ -42,7 +42,7 @@ Accept: application/json
   "type": "UPDATE",
   "date": "2026-11-18T22:00:00Z",
   "incident_identifier": "testy",
-  "monitors": ["testy"]
+  "monitors": []
 }
 
 ### DELETE an Event
