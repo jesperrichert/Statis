@@ -7,7 +7,7 @@ export default function RootLayout() {
     return (
         <div>
             <header className="border-b border-zinc-700">
-                <div className="flex ml-2 items-center justify-between">
+                <div className="flex ml-4 items-center justify-between">
                     <nav
                         className="flex flex-row my-5 gap-8 text-sm items-center justify-center font-medium text-zinc-300">
                         <div>

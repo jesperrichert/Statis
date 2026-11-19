@@ -43,7 +43,7 @@ export function IncidenceEvent({event}: { event: Event }) {
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className="w-full gap-2 border-white/10 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                                    className="w-full gap-2 border-white/10 text-white hover:bg-white/10 hover:text-white"
                                 >
                                     <a
                                         href={`/incidences/${event.incident_identifier}`}

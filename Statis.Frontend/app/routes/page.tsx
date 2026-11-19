@@ -30,7 +30,9 @@ export default function Page() {
                 </motion.h1>
 
                 {loading && (
-                    <p className="text-center text-white/40">Loading Monitors...</p>
+                    <p className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-white/40">
+                        Loading....
+                    </p>
                 )}
 
                 {!loading && (monitors.length == 0) && (
@@ -41,6 +43,7 @@ export default function Page() {
 
                 <div className={"flex flex-col gap-5"}>
                     {monitors.length > 0 && monitors.map((monitor) => {
+                        if ((monitor.group ?? "").length > 0) return
                         return (
                             <div>
                                 {new MonitorBuilder(

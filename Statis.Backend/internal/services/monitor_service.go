@@ -117,7 +117,6 @@ func (e *MonitorService) Add(dto *dto.MonitorDto[any]) int {
 		Type:               strings.ToUpper(dto.Type),
 		ExternalUrl:        dto.ExternalUrl,
 		TypeData:           dto.TypeData,
-		State:              monitors.Offline.ToString(),
 		AffectedByExternal: effects,
 	}).Where("identifier = ?", dto.Identifier).First(&monitorModel)
 
