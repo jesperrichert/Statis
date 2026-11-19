@@ -42,7 +42,7 @@ func (e *IncidentService) Delete(identifier string) bool {
 	if util.CheckNull(incidentModel.Identifier) {
 		return false
 	}
-
+	_ = e.DB.Model(&incidentModel).Association("Event").Delete(&incidentModel.Event)
 	e.DB.Delete(&incidentModel)
 	return true
 }
@@ -126,12 +126,6 @@ func (e *IncidentService) Update(identifier string, dto *dto.IncidentDto) int {
 			event.IncidentID = incident.ID
 			e.DB.Where("id = ?", event.ID).Updates(&event)
 		}
-	} else {
-		var oldEvent model.EventModel
-		e.DB.Where("id = ?", incident.EventID).First(&oldEvent)
-		oldEvent.IncidentID = 0
-		oldEvent.Incident = model.IncidentModel{ID: 0}
-		e.DB.Save(&oldEvent)
 	}
 
 	if !util.CheckNull(dto.Content) {

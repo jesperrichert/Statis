@@ -69,7 +69,7 @@ func (e *MonitorService) Delete(identifier string) bool {
 	if util.CheckNull(monitor.Identifier) {
 		return false
 	}
-
+	_ = e.DB.Model(&monitor).Association("Events").Delete(&monitor.Events)
 	e.DB.Delete(&monitor)
 	return true
 }

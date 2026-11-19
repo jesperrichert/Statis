@@ -38,13 +38,11 @@ Accept: application/json
 {
   "identifier": "testy",
   "title": "testy",
-  "description": "testy",
+  "description": "HELLO",
   "type": "UPDATE",
   "date": "2026-11-18T22:00:00Z",
   "incident_identifier": "testy",
-  "monitors": [
-    "testy"
-  ]
+  "monitors": ["testy"]
 }
 
 ### DELETE an Event

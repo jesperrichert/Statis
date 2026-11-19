@@ -35,7 +35,7 @@ Use the provided Docker Compose file: [`compose.yml`](compose.yml)
 
 Set up what you need and let Statis do the rest.
 
-> **API docs:** The API documentation lives in the [`api-specs`](../../tree/api-specs) branch.
+> **API docs:** The API documentation lives in the [`api-specs`](./docs) branch.
 
 ## Contributing
 

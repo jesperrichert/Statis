@@ -50,6 +50,8 @@ func (e *EventService) Delete(identifier string) bool {
 	if util.CheckNull(event.Identifier) {
 		return false
 	}
+	_ = e.DB.Model(&event).Association("Monitors").Delete(&event.Monitors)
+	_ = e.DB.Model(&event).Association("Incident").Delete(&event.Incident)
 	e.DB.Delete(&event)
 	return true
 }
@@ -128,7 +130,7 @@ func (e *EventService) Add(dto *dto.EventDto) int {
 
 func (e *EventService) Update(identifier string, dto *dto.EventDto) int {
 	var event model.EventModel
-	e.DB.Where("identifier = ?", identifier).First(&event)
+	e.DB.Preload("Monitors").Where("identifier = ?", identifier).First(&event)
 	if util.CheckNull(event.Identifier) {
 		return http.StatusNotFound
 	}
@@ -146,26 +148,28 @@ func (e *EventService) Update(identifier string, dto *dto.EventDto) int {
 		event.Date = dto.Date
 	}
 	if !util.CheckNullLen(dto.Monitors) {
-
-		var monitors []*model.MonitorModel
+		_ = e.DB.Model(&event).Association("Monitors").Clear()
+		monitors := make([]*model.MonitorModel, 0)
 		for i := range dto.Monitors {
 			id := dto.Monitors[i]
-			var monitor model.MonitorModel
-			e.DB.Where("identifier = ?", id).First(&monitor)
-			if !util.CheckNull(monitor.Identifier) {
-				monitors = append(monitors, &monitor)
+			var monitorModel model.MonitorModel
+			e.DB.Where("identifier = ?", id).First(&monitorModel)
+			if !util.CheckNull(monitorModel.Identifier) {
+				_ = e.DB.Model(&monitorModel).Association("Monitors").Append(&monitorModel)
+				monitors = append(monitors, &monitorModel)
 			}
 		}
 		event.Monitors = monitors
 	} else {
-		event.Monitors = []*model.MonitorModel{}
+		_ = e.DB.Model(&event).Association("Monitors").Clear()
 	}
 
 	if event.IncidentID != 0 {
 		var incident model.IncidentModel
 		e.DB.Where("id = ?", event.IncidentID).First(&incident)
 		if incident.EventID != event.ID {
-			event.IncidentID = 0
+			_ = e.DB.Model(&event).Association("Incident").Clear()
+			_ = e.DB.Model(&incident).Association("Event").Clear()
 		}
 	}
 
