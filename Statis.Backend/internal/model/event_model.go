@@ -1,8 +1,8 @@
 package model
 
 type EventModel struct {
-	ID          int `gorm:"primaryKey"`
-	Identifier  string
+	ID          int    `gorm:"primaryKey"`
+	Identifier  string `gorm:"unique"`
 	Title       string
 	Description string
 	Type        string // EventType

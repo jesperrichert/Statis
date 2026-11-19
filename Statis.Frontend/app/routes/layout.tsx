@@ -5,7 +5,7 @@ import {Calendars, House} from "lucide-react";
 
 export default function RootLayout() {
     return (
-        <div>
+        <div className={"mx-10"}>
             <header className="border-b border-zinc-700">
                 <div className="flex ml-4 items-center justify-between">
                     <nav

@@ -1,8 +1,8 @@
 package model
 
 type IncidentModel struct {
-	ID         int `gorm:"primaryKey"`
-	Identifier string
+	ID         int    `gorm:"primaryKey"`
+	Identifier string `gorm:"unique"`
 	Content    string
 	EventID    int
 	Event      *EventModel

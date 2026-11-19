@@ -1,65 +1,59 @@
-import {
-  MonitorState,
-  MonitorStateStyles,
-  type Monitor,
-} from "../../../types/status";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { MonitorRow, StatusDot } from "./statusMonitor";
+import {type Monitor, MonitorState, MonitorStateStyles,} from "../../../types/status";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "../ui/accordion";
+import {MonitorRow, StatusDot} from "./statusMonitor";
 
 export function MonitorGroup({
-  parent,
-  children,
-}: {
-  parent: Monitor;
-  children: Monitor[];
+                                 parent,
+                                 children,
+                             }: {
+    parent: Monitor;
+    children: Monitor[];
 }) {
-  const onlineCount = children.filter(
-    (c) => c.state == MonitorState.ONLINE,
-  ).length;
-  const groupStateColor =
-    onlineCount < children.length
-      ? MonitorStateStyles[MonitorState.DEGRADED].color
-      : onlineCount == children.length
-        ? MonitorStateStyles[MonitorState.ONLINE].color
-        : children.length == 0 
-          ? MonitorStateStyles[MonitorState.OFFLINE].color
-          : MonitorStateStyles[MonitorState.DEGRADED].color;
+    const onlineCount = children.filter(
+        (c) => c.state == MonitorState.ONLINE,
+    ).length;
+    const groupStateColor =
+        onlineCount < children.length
+            ? MonitorStateStyles[MonitorState.DEGRADED].color
+            : onlineCount == children.length
+                ? MonitorStateStyles[MonitorState.ONLINE].color
+                : children.length == 0
+                    ? MonitorStateStyles[MonitorState.OFFLINE].color
+                    : MonitorStateStyles[MonitorState.DEGRADED].color;
 
-  return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
-      <Accordion type="single" collapsible defaultValue={`group-${parent.identifier}`}>
-        <AccordionItem value={`group-${parent.identifier}`} className="border-none">
-          <AccordionTrigger className="px-5 py-4 hover:bg-white/3 hover:no-underline">
-            <div className="flex flex-1 items-center gap-3 text-left">
-              <StatusDot color={groupStateColor} />
-              <span className="text-xl font-semibold text-white">
-                {parent.name}
-              </span>
-              <span className="ml-auto mr-3 text-sm text-white/50">
-                {onlineCount}/{children.length} online
-              </span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-5 pb-5">
-            {children.length > 0 ? (
-              <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                {children.map((child) => (
-                  <MonitorRow key={child.identifier} monitor={child} />
-                ))}
-              </div>
-            ) : (
-              <p className="rounded-xl border border-dashed border-white/10 p-4 text-center text-sm text-white/40">
-                No Monitore found
-              </p>
-            )}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-  );
+    return (
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/4 backdrop-blur">
+            <Accordion type="single" collapsible defaultValue={`group-${parent.identifier}`}>
+                <AccordionItem value={`group-${parent.identifier}`} className="border-none">
+                    <AccordionTrigger className="flex flex-col px-5 py-4 hover:bg-white/3 hover:no-underline">
+                        <div className="flex flex-1 items-center gap-3 text-left">
+                            <StatusDot color={groupStateColor}/>
+                            <span className="text-xl font-semibold text-white">
+                                {parent.name}
+                            </span>
+                            <span className="ml-auto mr-3 text-sm text-white/50">
+                                {onlineCount}/{children.length} online
+                            </span>
+                        </div>
+                        <div className={"mx-2 text-xs"}>
+                            {parent.description}
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-2 pb-5">
+                        {children.length > 0 ? (
+                            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                                {children.map((child) => (
+                                    <MonitorRow key={child.identifier} monitor={child}/>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="rounded-xl border border-dashed border-white/10 p-4 text-center text-sm text-white/40">
+                                No Monitore found
+                            </p>
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </div>
+    );
 }

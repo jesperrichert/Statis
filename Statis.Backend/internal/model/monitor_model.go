@@ -10,8 +10,8 @@ type MonitorModel Monitor[any]
 func (MonitorModel) TableName() string { return "monitors" }
 
 type Monitor[T any] struct {
-	ID                 int `gorm:"primaryKey"`
-	Identifier         string
+	ID                 int    `gorm:"primaryKey"`
+	Identifier         string `gorm:"unique"`
 	IsParent           bool
 	Group              string
 	Name               string
