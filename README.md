@@ -35,7 +35,8 @@ Use the provided Docker Compose file: [`compose.yml`](compose.yml)
 
 Set up what you need and let Statis do the rest.
 
-> **API docs:** The API documentation lives in the [`api-specs`](./docs) branch.
+> **API docs:** The API documentation lives in the [`api-specs`](./docs) branch. <br />
+> *Also you can find more about Statis at [@Outline](https://doc.jespersen.zip/s/statis)*
 
 ## Contributing
 

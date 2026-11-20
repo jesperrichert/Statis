@@ -49,3 +49,4 @@ next-env.d.ts
 /storage
 storage/db.sqlite
 Statis.Frontend/bun.lock
+docker-compose.dev.yml
