@@ -3,13 +3,16 @@ services:
     container_name: statis
     image: ghcr.io/jesperrichert/statis:latest
     environment:
-      DISABLE_FRONTEND: false
-      AUTO_CONFIG_INTERVAL: 30 # seconds
-      WEBHOOKS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/webhooks.json"
-      EVENTS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/events.json"
-      INCIDENCES: "https://jesperrichert.github.io/Statis/status/incidences.json"
-      MONITORS: "https://raw.githubusercontent.com/jesperrichert/Statis/refs/heads/dataSpace/status/monitor.json"
+      STATIS_FAVICON: "/bloby.png"
+      STATIS_APP_TITLE: "Blo.by Status"
+      STATIS_DISABLE_FRONTEND: false
+      STATIS_AUTO_CONFIG_INTERVAL: 30 # seconds
+      STATIS_WEBHOOKS: ""
+      STATIS_EVENTS: ""
+      STATIS_INCIDENCES: ""
+      STATIS_MONITORS: ""
     volumes:
+      - "./storage/bloby.png:/bloby.png"
       - "./storage/db.sqlite:/app/db.sqlite"
     ports:
       - "4000:3000"
