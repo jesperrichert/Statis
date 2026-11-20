@@ -1,6 +1,10 @@
 package main
 
-import "jespersen.zip.statis/internal/config"
+import (
+	"fmt"
+
+	"jespersen.zip.statis/internal/config"
+)
 
 func main() {
 	app := config.NewGin()
@@ -16,4 +20,6 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	fmt.Println("Statis is running...")
 }

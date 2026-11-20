@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"reflect"
 	"strconv"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"gorm.io/gorm"
 	"jespersen.zip.statis/internal/services"
+	"jespersen.zip.statis/internal/util"
 )
 
 type AutoConfigureScheduler struct {
@@ -47,19 +47,19 @@ func NewAutoConfigureScheduler(
 
 func (s *AutoConfigureScheduler) Setup() *AutoConfigureScheduler {
 
-	monitors, mOk := os.LookupEnv("MONITORS")
+	monitors, mOk := util.Env("MONITORS")
 	if mOk {
 		s.newJob(monitors, "MONITORS")
 	}
-	events, eOk := os.LookupEnv("EVENTS")
+	events, eOk := util.Env("EVENTS")
 	if eOk {
 		s.newJob(events, "EVENTS")
 	}
-	incidences, iOk := os.LookupEnv("INCIDENCES")
+	incidences, iOk := util.Env("INCIDENCES")
 	if iOk {
 		s.newJob(incidences, "INCIDENCES")
 	}
-	webhooks, wOk := os.LookupEnv("WEBHOOKS")
+	webhooks, wOk := util.Env("WEBHOOKS")
 	if wOk {
 		s.newJob(webhooks, "WEBHOOKS")
 	}
@@ -107,7 +107,7 @@ func (s *AutoConfigureScheduler) newJob(jsonUrl string, jobType string) {
 		}
 	}
 
-	seconds, ok := os.LookupEnv("AUTO_CONFIG_INTERVAL")
+	seconds, ok := util.Env("AUTO_CONFIG_INTERVAL")
 	if !ok {
 		println("[AUTO CONFIG] Failed to start...")
 		return

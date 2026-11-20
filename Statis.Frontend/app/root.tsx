@@ -1,6 +1,7 @@
 import {Links, Meta, Outlet, Scripts, ScrollRestoration,} from "react-router";
 
 import "./app.css";
+import {ConfigContextProvider} from "~/context/ConfigContext";
 
 export const links: Route.LinksFunction = () => [
     {rel: "preconnect", href: "https://fonts.googleapis.com"},
@@ -20,20 +21,17 @@ export function Layout({children}: { children: React.ReactNode }) {
         <html lang="en">
         <head>
             <meta charSet="utf-8"/>
-            <link rel="icon" href="/statis.svg"/>
-            <title>Statis</title>
             <meta name="description" content="Statis"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
             <Meta/>
             <Links/>
         </head>
-        <body
-            className="min-h-screen flex flex-col transition-colors duration-300">
+
         {children}
+
+        <ConfigContextProvider/>
         <ScrollRestoration/>
         <Scripts/>
-        </body>
         </html>
     );
 }
@@ -42,7 +40,9 @@ export default function App() {
     return <Outlet/>;
 }
 
-export function ErrorBoundary({error}: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({
+                                  error
+                              }: Route.ErrorBoundaryProps) {
     return (
         <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
             <div className="text-center">
