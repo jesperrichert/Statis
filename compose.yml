@@ -6,12 +6,13 @@ services:
       STATIS_FAVICON: "/icon.png"
       STATIS_APP_TITLE: "Statis"
       STATIS_DISABLE_FRONTEND: false
-      STATIS_AUTO_CONFIG_INTERVAL: 5 # seconds
+      STATIS_AUTO_CONFIG_INTERVAL: 30 # seconds
       STATIS_WEBHOOKS: "url"
       STATIS_EVENTS: "url"
       STATIS_INCIDENCES: "url"
       STATIS_MONITORS: "url"
     volumes:
+      - "./storage/icon.png:/icon.png"
       - "./storage/db.sqlite:/app/db.sqlite"
     ports:
       - "4000:3000"
