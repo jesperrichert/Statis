@@ -194,7 +194,7 @@ export default function IncidencePage() {
     return (
         <>
             <title>{metadata?.title ?? "Statis"}</title>
-            <main className="min-h-screen bg-zinc-950 px-4 py-16 sm:py-24">
+            <main className="min-h-screen px-4 py-16 sm:py-24">
                 {!loading && (
                     <motion.article
                         initial={{opacity: 0, y: 12}}
