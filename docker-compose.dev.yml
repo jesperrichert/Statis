@@ -7,10 +7,10 @@ services:
       STATIS_APP_TITLE: "Blo.by Status"
       STATIS_DISABLE_FRONTEND: false
       STATIS_AUTO_CONFIG_INTERVAL: 30 # seconds
-      STATIS_WEBHOOKS: ""
-      STATIS_EVENTS: ""
-      STATIS_INCIDENCES: ""
-      STATIS_MONITORS: ""
+      STATIS_WEBHOOKS: "https://jesperrichert.github.io/DataSpace/Statis/webhooks.json"
+      STATIS_EVENTS: "https://jesperrichert.github.io/DataSpace/Statis/events.json"
+      STATIS_INCIDENCES: "https://jesperrichert.github.io/DataSpace/Statis/incidences.json"
+      STATIS_MONITORS: "https://jesperrichert.github.io/DataSpace/Statis/monitor.json"
     volumes:
       - "./storage/bloby.png:/bloby.png"
       - "./storage/db.sqlite:/app/db.sqlite"

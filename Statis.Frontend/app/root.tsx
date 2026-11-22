@@ -26,10 +26,9 @@ export function Layout({children}: { children: React.ReactNode }) {
             <Meta/>
             <Links/>
         </head>
-
-        {children}
-
-        <ConfigContextProvider/>
+        <ConfigContextProvider>
+            {children}
+        </ConfigContextProvider>
         <ScrollRestoration/>
         <Scripts/>
         </html>

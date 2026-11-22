@@ -7,6 +7,7 @@ import {ConfigContext} from "~/context/ConfigContext";
 
 export default function RootLayout() {
     const config = useContext(ConfigContext)
+    
     return (
         <>
             <head>

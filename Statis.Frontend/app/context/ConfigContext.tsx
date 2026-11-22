@@ -1,9 +1,9 @@
-import {createContext, useEffect, useState} from "react";
+import {createContext, type ReactNode, useEffect, useState} from "react";
 import type {Config} from "../../types/config";
 
 export const ConfigContext = createContext<Config>({} as Config);
 
-export function ConfigContextProvider() {
+export function ConfigContextProvider({children}: { children: ReactNode }) {
     const [config, setConfig] = useState<Config | null>();
 
     useEffect(() => {
@@ -15,5 +15,7 @@ export function ConfigContextProvider() {
                 });
     })
 
-    return (<ConfigContext value={config ?? {} as Config}/>);
+    console.log(config)
+
+    return (<ConfigContext value={config ?? {} as Config}>{children}</ConfigContext>);
 }
